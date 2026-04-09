@@ -35,64 +35,64 @@ PolsriEduAI is a modern academic platform that combines:
 
 ## Project Structure
 
-polsri-edu-ai/
-│
-├── README.md
-├── .gitignore
-├── requirements.txt
-│
-├── frontend/
-│   ├── assets/
-│   │   ├── css/
-│   │   │   ├── base.css
-│   │   │   ├── components.css
-│   │   │   └── layout.css
-│   │   └── js/
-│   │       ├── api.js
-│   │       ├── auth.js
-│   │       └── utils.js
-│   ├── pages/
-│   │   ├── index.html
-│   │   ├── login.html
+polsri-edu-ai/  
+│  
+├── README.md  
+├── .gitignore  
+├── requirements.txt  
+│  
+├── frontend/  
+│   ├── assets/  
+│   │   ├── css/  
+│   │   │   ├── base.css  
+│   │   │   ├── components.css  
+│   │   │   └── layout.css  
+│   │   └── js/  
+│   │       ├── api.js  
+│   │       ├── auth.js  
+│   │       └── utils.js  
+│   ├── pages/  
+│   │   ├── index.html  
+│   │   ├── login.html  
 │   │   ├── admin/
-│   │   │   └── dashboard.html
-│   │   ├── dosen/
-│   │   │   └── dashboard.html
-│   │   └── mahasiswa/
-│   │       ├── dashboard.html
-│   │       ├── absensi.html
-│   │       └── ai-assistant.html
-│   └── components/
-│
-├── backend/
-│   ├── main.py
-│   ├── config.py
-│   ├── database.py
-│   ├── models/
-│   │   ├── mahasiswa.py
-│   │   ├── dosen.py
-│   │   ├── absensi.py
-│   │   └── user.py
-│   ├── routers/
-│   │   ├── auth.py
-│   │   ├── absensi.py
-│   │   ├── akademik.py
-│   │   └── ai_agent.py
-│   ├── services/
-│   │   ├── face_recognition.py
-│   │   ├── liveness.py
-│   │   └── ai_agent.py
-│   ├── rag/
-│   │   ├── indexer.py
-│   │   ├── retriever.py
-│   │   └── groq_client.py
-│   ├── data/
-│   │   └── pedoman_akademik/
-│   └── migrations/
-│
-└── docs/
-└── README.md
-
+│   │   │   └── dashboard.html  
+│   │   ├── dosen/  
+│   │   │   └── dashboard.html  
+│   │   └── mahasiswa/  
+│   │       ├── dashboard.html  
+│   │       ├── absensi.html  
+│   │       └── ai-assistant.html  
+│   └── components/  
+│  
+├── backend/  
+│   ├── main.py  
+│   ├── config.py  
+│   ├── database.py  
+│   ├── models/  
+│   │   ├── mahasiswa.py  
+│   │   ├── dosen.py  
+│   │   ├── absensi.py  
+│   │   └── user.py  
+│   ├── routers/  
+│   │   ├── auth.py  
+│   │   ├── absensi.py  
+│   │   ├── akademik.py  
+│   │   └── ai_agent.py  
+│   ├── services/  
+│   │   ├── face_recognition.py  
+│   │   ├── liveness.py  
+│   │   └── ai_agent.py  
+│   ├── rag/  
+│   │   ├── indexer.py  
+│   │   ├── retriever.py  
+│   │   └── groq_client.py  
+│   ├── data/  
+│   │   └── academic_guidelines/  
+│   └── migrations/  
+│  
+└── docs/  
+└── architecture.md  
+  
 ---
 
 ## Cara Menjalankan (Development)
