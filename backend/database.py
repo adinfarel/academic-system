@@ -5,6 +5,11 @@ Using SQLAlchemy as an ORM (Object Relational Mapper).
 ORM = you write a Python class, SQLAlchemy handles the SQL queries.
 """
 
+from backend.utils.logger import get_logger
+
+# LOGGER
+logger = get_logger(__name__)
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import OperationalError
@@ -30,6 +35,11 @@ SessionLocal = sessionmaker(
 
 # Base Model
 class Base(DeclarativeBase):
+    """
+    Base class for all ORM models.
+    Every model (Student, Lecturer, etc.) must inherit from this class.
+    so SQLAlchemy knows they are database tables.
+    """
     pass
 
 # Depedency Injection
@@ -71,6 +81,6 @@ def check_db_connection() -> bool:
             conn.execute(text("SELECT_1"))
         return True
     except OperationalError as e:
-        print(f"[DB ERROR] Connections failed to database: {e}")
+        logger.error(f"[DB ERROR] Connection failed to database: {e}")
         return False
             
