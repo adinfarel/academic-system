@@ -78,7 +78,7 @@ def check_db_connection() -> bool:
     """
     try:
         with engine.connect() as conn:
-            conn.execute(text("SELECT_1"))
+            conn.execute(text("SELECT 1"))
         return True
     except OperationalError as e:
         logger.error(f"[DB ERROR] Connection failed to database: {e}")
