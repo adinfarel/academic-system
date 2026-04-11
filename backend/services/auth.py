@@ -1,0 +1,262 @@
+"""
+services/auth.py — Authentication and JWT logic
+
+All password hashing and token handling is done here.
+The router only calls functions from here — there's no logic in the router.
+
+Principle: Router = thin, Service = fat
+"""
+
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+
+from jose import JWSError, jwt
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+
+from backend.config import get_settings
+from backend.models.user import User, UserRole
+from backend.utils.logger import get_logger
+
+# LOGGER
+logger = get_logger(__name__)
+
+# SETTINGS
+settings = get_settings()
+
+# PASSWORD HASHING
+pwd_context = CryptContext(schemes=["bcrypt"], depracated="auto")
+
+def hash_password(plain_password: str) -> str:
+    """
+    Change plain password to be hash bcrypt.
+    
+    Example:
+        hash_password("password123")
+        -> "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"
+    
+    Args:
+        plain_password: real password from user
+    
+    Returns:
+        str: hash bcrypt that safety saved to DB
+    """
+    return pwd_context.hash(plain_password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Verification password while login.
+    Not decrypt hash - becrypt indeed could not decrypt.
+    Which is conducted: re-hash password input, compare its result.
+    
+    Args:
+        plain_password: password that input user while login
+        hashed_password: hashed that save at DB
+    
+    Returns:
+        bool: True if match, False if it is not
+    """
+    return pwd_context.verify(plain_password, hashed_password)
+
+# JWT
+
+def create_access_token(
+    user_id: int,
+    username: str,
+    role: UserRole,
+    expires_delta: Optional[timedelta] = None
+) -> str:
+    """
+    Create a JWT access token containing the user's identity.
+
+    A JWT consists of three parts (separated by dots):
+    1. Header: the algorithm used (HS256)
+    2. Payload: the stored data (id, role, expiry)
+    3. Signature: a hash of the header and payload using SECRET_KEY
+
+    Anyone can read the JWT payload (it's not encrypted, just base64 encoded).
+    But it cannot be MODIFIED without SECRET_KEY — because the signature will be invalid.
+
+    Args:
+        user_id: user ID from the database
+        username: user username
+        role: user role (student/lecturer/admin)
+        expires_delta: token validity period (default from settings)
+
+    Returns:
+        str: JWT token string
+    """
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+    )
+    
+    # Payload
+    payload = {
+        "sub": str(user_id),
+        "username": username,
+        "role": role.value,
+        "exp": expire,
+        "iat": datetime.now(timezone.utc)
+    }
+    
+    # Encode
+    token = jwt.encode(
+        payload,
+        settings.JWT_SECRET_KEY,
+        algorithm=settings.JWT_ALGORITHM,
+    )
+    
+    return token
+
+def decode_access_token(token: str) -> dict:
+    """
+    Decode and verify JWT tokens.
+    Used in dependency injection to protect endpoints.
+
+    Verification process:
+    1. Check signature is valid (unmodified)
+    2. Check token is unexpired
+    3. Extract payload
+
+    Args:
+        token: JWT token string from Authorization header
+
+    Returns:
+        dict: payload token (user_id, username, role)
+
+    Raises:
+        HTTPException 401: if token is invalid or expired
+    """
+    try:
+        payload = jwt.decode(
+            token,
+            settings.JWT_SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM]
+        )
+        return payload
+    except JWSError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token is invalid or expired",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+# DB OPS
+
+def get_user_by_username(db: Session, username: str) -> Optional[User]:
+    """
+    Search for a user in the database by username.
+    Also try searching by email if the username isn't found.
+    -> This way, the user can log in using either their username or email.
+
+    Args:
+        db: Database session from dependency injection
+        username: Username or email entered by the user
+
+    Returns:
+        User object if found, None if not
+    """
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        user = db.query(User).filter(User.email == username).first()
+    
+    return user
+
+def get_user_by_id(db: Session, id: int) -> Optional[User]:
+    """
+    Search for a user in the database by id.
+    
+    Args:
+        db: Database session from dependency injection
+        id: User id entered by the user
+    
+    Returns:
+        User object if found, None if not
+    """
+    return db.query(User).filter(User.id == id).first()
+
+def authenticate_user(
+    db: Session,
+    username: str,
+    password: str,
+) -> Optional[User]:
+    """
+    Verifies the username and password combination.
+    Combined with get_user + verify_password.
+
+    Args:
+        db: database session
+        username: username or email
+        password: plain password from user input
+
+    Returns:
+        User object if successful, None if failed
+    """
+    user = get_user_by_username(db, username)
+    
+    if not user:
+        return None
+    
+    if not verify_password(password, user.hashed_password):
+        return None # Return none if not matching
+    
+    if not user.is_active:
+        return None # User de-activate
+    
+    return user
+
+def register_user(
+    db: Session,
+    email: str,
+    username: str,
+    password: str,
+    role: UserRole = UserRole.MAHASISWA
+) -> User:
+    """
+    Create a new user account in the database.
+
+    Flow:
+    1. Check email and username are not already in use
+    2. Hash password
+    3. Save to database
+
+    Args:
+        db: database session
+        email: user email
+        username: unique username
+        password: plain password (will be hashed here)
+        role: user role
+
+    Returns:
+        Newly created user object
+    
+    Raises:
+        HTTPException 400: kalau email atau username sudah dipakai
+    """
+    # Check duplicate email
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered",
+        )
+    
+    # Check duplicate username
+    if db.query(User).filter(User.username == username).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already used",
+        )
+    
+    new_user = User(
+        email=email,
+        username=username.lower(),
+        hashed_password=hash_password(password),
+        role=role,
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return new_user
