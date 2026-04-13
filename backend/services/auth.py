@@ -12,6 +12,7 @@ from typing import Optional
 
 from jose import JWSError, jwt
 from passlib.context import CryptContext
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
@@ -26,7 +27,7 @@ logger = get_logger(__name__)
 settings = get_settings()
 
 # PASSWORD HASHING
-pwd_context = CryptContext(schemes=["bcrypt"], depracated="auto")
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(plain_password: str) -> str:
     """
@@ -42,7 +43,7 @@ def hash_password(plain_password: str) -> str:
     Returns:
         str: hash bcrypt that safety saved to DB
     """
-    return pwd_context.hash(plain_password)
+    return generate_password_hash(plain_password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
@@ -57,7 +58,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         bool: True if match, False if it is not
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return check_password_hash(hashed_password, plain_password)
 
 # JWT
 
