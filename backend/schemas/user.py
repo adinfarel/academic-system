@@ -92,3 +92,74 @@ class UserResponse(BaseModel):
         """
         from_attributes = True
     
+class MahasiswaRegisterRequest(BaseModel):
+    """
+    Complete data for student account registration.
+    """
+    email: EmailStr
+    username: str
+    password: str
+    nim: str
+    full_name: str
+    study_program: str
+    major: str
+    semester: int = 1
+    entry_year: int
+    
+    @field_validator("username")
+    @classmethod
+    def username_valid(cls, v: str) -> str:
+        """
+        Custom validator — runs automatically when data is entered.
+        Ensure the username contains no spaces and is at least 3 characters long.
+        """
+        if len(v) < 3:
+            raise ValueError("Username must be at least 3 characters long")
+        
+        if " " in v:
+            raise ValueError("Username must not contain spaces")
+        
+        return v.lower()
+    
+    @field_validator("password")
+    @classmethod
+    def password_valid(cls, v: str) -> str:
+        """Password must be at least 8 characters."""
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        
+        return v
+    
+    @field_validator("nim")
+    @classmethod
+    def nim_valid(cls, v: str) -> str:
+        if len(v) < 5:
+            raise ValueError("NIM is invalid")
+        return v.strip()
+
+class LecturerRegisterRequest(BaseModel):
+    """
+    Complete data for registering lecturer accounts.
+    This single request populates both the user and lecturer tables.
+    """
+    email: EmailStr
+    username: str
+    password: str
+    nidn: str
+    full_name: str
+    study_program: str
+    major: str
+    position: Optional[str] = None
+
+class MahasiswaResponse(BaseModel):
+    """Response after student's successful register."""
+    user_id: int
+    mahasiswa_id: int
+    username: str
+    email: str
+    nim: str
+    full_name: str
+    role: UserRole
+
+    class Config:
+        from_attributes = True
