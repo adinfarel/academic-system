@@ -18,6 +18,8 @@ from fastapi import HTTPException, status
 
 from backend.config import get_settings
 from backend.models.user import User, UserRole
+from backend.models.mahasiswa import Mahasiswa
+from backend.models.dosen import Dosen
 from backend.utils.logger import get_logger
 
 # LOGGER
@@ -261,3 +263,140 @@ def register_user(
     db.refresh(new_user)
     
     return new_user
+
+def register_mahasiswa(
+    db: Session,
+    data: dict,
+) -> tuple:
+    """
+    Student registration — fill the users AND student tables in one transaction.
+    
+    Args:
+        db: database session
+        data: dict containing all fields from MahasiswaRegisterRequest
+
+    Returns:
+        tuple: (User, Student) newly created
+
+    Raises:
+        HTTPException 400: if email, username, or student ID number is already in use
+    """
+    if db.query(User).filter(User.email == data["email"]).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered."
+        )
+    
+    if db.query(User).filter(User.username == data["username"]).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already use"
+        )
+
+    if db.query(Mahasiswa).filter(Mahasiswa.nim == data["nim"]).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIM already registered."
+        )
+    
+    try:
+        # ADD TABEL USERS
+        new_user = User(
+            email=data["email"],
+            username=data["username"].lower(),
+            hashed_password=hash_password(data["password"]),
+            role=UserRole.MAHASISWA
+        )
+        db.add(new_user)
+        db.flush()
+        
+        # ADD TABEL STUDENT
+        new_mahasiswa = Mahasiswa(
+            user_id=new_user.id,
+            nim=data["nim"],
+            full_name=data["full_name"],
+            study_program=data["study_program"],
+            major=data["major"],
+            semester=data["semester"],
+            entry_year=data["entry_year"]
+        )
+        db.add(new_mahasiswa)
+        
+        db.commit()
+        db.refresh(new_user)
+        db.refresh(new_mahasiswa)
+        
+        return new_user, new_mahasiswa
+    
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fail create account: {str(e)}"
+        )
+
+def register_dosen(
+    db: Session,
+    data: dict,
+) -> tuple:
+    """
+    Register lecturers — populate the users and lecturers tables in one transaction.
+    Same logic as register_mahasiswa.
+
+    Args:
+        db: database session
+        data: dict containing all fields from the DosenRegisterRequest
+
+    Returns:
+        newly created tuple: (User, Lecturer)
+    """
+    if db.query(User).filter(User.email == data["email"]).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already regist."
+        )
+
+    if db.query(User).filter(User.username == data["username"]).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already use"
+        )
+
+    if db.query(Dosen).filter(Dosen.nidn == data["nidn"]).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIDN already registered."
+        )
+        
+    try:
+        new_user = User(
+            email=data["email"],
+            username=data["username"].lower(),
+            hashed_password=hash_password(data["password"]),
+            role=UserRole.DOSEN,
+        )
+        db.add(new_user)
+        db.flush()
+
+        new_dosen = Dosen(
+            user_id=new_user.id,
+            nidn=data["nidn"],
+            nama_lengkap=data["nama_lengkap"],
+            program_studi=data["program_studi"],
+            jurusan=data["jurusan"],
+            jabatan=data.get("jabatan"),
+        )
+        db.add(new_dosen)
+
+        db.commit()
+        db.refresh(new_user)
+        db.refresh(new_dosen)
+
+        return new_user, new_dosen
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fail create account: {str(e)}"
+        )
