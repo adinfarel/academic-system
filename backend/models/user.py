@@ -26,6 +26,21 @@ class UserRole(str, enum.Enum):
     MAHASISWA = "mahasiswa"
     DOSEN = "dosen"
     ADMIN = "admin"
+    
+# APPROVAL SYSTEM
+class RegistrationStatus(str, enum.Enum):
+    """
+    Status registration account student
+    
+    PENDING → just registered, awaiting admin review
+    APPROVED → approved by admin, code sent to email
+    REJECTED → rejected by admin
+    ACTIVE → student has logged in for the first time and changed their password
+    """
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    ACTIVE = "active"
 
 # MODEL
 class User(Base):
@@ -57,6 +72,29 @@ class User(Base):
     # Status
     is_active = Column(Boolean, default=True)
     
+    # Approval
+    registration_status = Column(
+        Enum(RegistrationStatus),
+        nullable=False,
+        default=RegistrationStatus.PENDING
+    )
+    verification_code = Column(
+        String(20),
+        nullable=True
+    )
+    verification_code_sent_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    rejection_reason = Column(
+        String(500),
+        nullable=True
+    )
+    must_change_password = Column(
+        Boolean,
+        default=False,
+    )
+    
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
@@ -81,4 +119,3 @@ class User(Base):
     def __repr__(self):
         """String representation of object — appears during print/debug."""
         return f"<User id={self.id} username={self.username} role={self.role}>"
-    
