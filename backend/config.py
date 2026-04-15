@@ -7,7 +7,6 @@ One place for all configurations = easy to maintain and secure (no hardcode).
 
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-import secrets
 
 class Settings(BaseSettings):
     """
@@ -39,22 +38,27 @@ class Settings(BaseSettings):
         )
     
     # JWT AUTH
-    JWT_SECRET_KEY: str = secrets.token_hex(32)
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60 * 8
     
     # GROQ
-    GROQ_API_KEY: str = ""
+    GROQ_API_KEY: str
     GROQ_MODEL: str = "llama-3.1-8b-instant"
     
     # RAG / Vector DB
     CHROMA_DB_PATH:  str = "./chroma_db"
-    RAG_CSV_PATH: str = "./backend/data/academic_guidelines"
-    EMBEDDING_MODEL: str = "sentence-transformer/all-MiniLM-L6-v2"
+    RAG_CSV_PATH: str = "/.backend/data/academic_guidelines"
+    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
     
     # COMPUTER VISION
     FACE_TOLERANCE: float = 0.5
-    LIVENESS_THRESHOLD: float = 0.7
+    LIVENESS_THRESHOLD: float = 0.45 # Best 0.7 for production
+    
+    # CAMPUS LOCATION
+    CAMPUS_LATITUDE: float = -2.964177
+    CAMPUS_LONGITUDE: float = 104.726011
+    CAMPUS_RADIUS_METER: float = 300.0
     
     class Config:
         env_file = ".env"
