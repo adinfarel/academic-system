@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login ke PolsriEduAI — Sistem Akademik Politeknik Sriwijaya">
+  <title>Masuk — PolsriEduAI</title>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+
+  <style>
+    .login-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    @media (max-width: 768px) {
+      .login-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .login-visual {
+        display: none;
+      }
+    }
+
+    /* Left: particle visual with letter shape */
+    .login-visual {
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .login-visual canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .login-visual .visual-text {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .login-visual .visual-brand {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    /* Right: form */
+    .login-form-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2xl);
+      position: relative;
+    }
+
+    .login-form-box {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .login-type-title {
+      font-size: var(--text-3xl);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-xs);
+      min-height: 1.2em;
+    }
+
+    .login-type-cursor {
+      display: inline-block;
+      width: 4px;
+      height: 1em;
+      margin-left: 3px;
+      vertical-align: text-bottom;
+      border-radius: 2px;
+      animation: blink 0.75s step-end infinite, cursorColor 2s linear infinite;
+    }
+
+    .login-type-cursor.done {
+      animation: none;
+      background: transparent;
+    }
+
+    .login-subtitle {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      margin-bottom: var(--space-2xl);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .login-subtitle.show {
+      opacity: 1;
+    }
+
+    .login-form-group {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.5s ease;
+    }
+
+    .login-form-group.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .login-back {
+      position: absolute;
+      top: var(--space-lg);
+      left: var(--space-xl);
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-back:hover {
+      color: var(--fg-primary);
+      opacity: 1;
+    }
+
+    .login-error {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-size: var(--text-sm);
+      color: var(--danger);
+      margin-bottom: var(--space-lg);
+      display: none;
+    }
+
+    .login-error.show {
+      display: block;
+      animation: shake 0.4s ease;
+    }
+
+    .login-footer {
+      margin-top: var(--space-xl);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .login-footer.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-layout">
+    <!-- Left: Visual with particle letter -->
+    <div class="login-visual">
+      <canvas id="login-particles"></canvas>
+      <div class="visual-text">
+        <span class="visual-brand">PolsriEduAI</span>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="login-form-side">
+      <a href="index.html" class="login-back">← Kembali</a>
+
+      <div class="login-form-box">
+        <div class="login-type-title">
+          <span id="login-type-target"></span><span class="login-type-cursor" id="login-cursor"></span>
+        </div>
+        <p class="login-subtitle" id="login-subtitle">Masuk ke sistem akademik Anda</p>
+
+        <div class="login-form-group" id="login-form-group">
+          <div class="login-error" id="login-error"></div>
+
+          <form id="login-form" autocomplete="on">
+            <div class="form-group">
+              <label class="form-label" for="username">Username</label>
+              <input type="text" id="username" name="username" class="form-input" placeholder="Masukkan username"
+                required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password"
+                required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary w-full btn-lg" id="login-btn">Masuk</button>
+          </form>
+
+          <div class="login-footer" id="login-footer">
+            <p class="text-sm text-muted">
+              Belum punya akun? <a href="register.html"
+                style="color: var(--fg-primary); text-decoration: underline;">Daftar di sini</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/particles.js"></script>
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (isLoggedIn()) {
+        const role = getUserRole();
+        if (role) redirectToDashboard(role);
+        return;
+      }
+
+      // Particles — gravity attract like Antigravity
+      initParticles('login-particles', {
+        count: 400,
+        size: 1.5,
+        speed: 0.02,
+        shape: 'circles-double',
+        shapeScale: 0.38,
+        mouseRadius: 200,
+        mouseRepelForce: 0.06,
+        mouseMode: 'attract',
+        colors: [
+          'rgba(66, 133, 244, 0.6)',
+          'rgba(234, 67, 53, 0.4)',
+          'rgba(251, 188, 4, 0.4)',
+          'rgba(52, 168, 83, 0.4)',
+          'rgba(103, 58, 183, 0.3)',
+        ],
+        returnSpeed: 0.02,
+      });
+
+      // Typing
+      const phrase = "Selamat Datang";
+      const target = document.getElementById('login-type-target');
+      const cursor = document.getElementById('login-cursor');
+      let i = 0;
+
+      function typeChar() {
+        if (i < phrase.length) {
+          target.textContent += phrase[i];
+          i++;
+          setTimeout(typeChar, 50 + Math.random() * 30);
+        } else {
+          setTimeout(onDone, 200);
+        }
+      }
+
+      function onDone() {
+        cursor.classList.add('done');
+        setTimeout(() => document.getElementById('login-subtitle').classList.add('show'), 100);
+        setTimeout(() => document.getElementById('login-form-group').classList.add('show'), 300);
+        setTimeout(() => document.getElementById('login-footer').classList.add('show'), 500);
+        setTimeout(() => document.getElementById('username').focus(), 600);
+      }
+
+      setTimeout(typeChar, 400);
+
+      // Login form
+      const form = document.getElementById('login-form');
+      const errorEl = document.getElementById('login-error');
+      const loginBtn = document.getElementById('login-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        if (!username || !password) { showError('Username dan password wajib diisi.'); return; }
+
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Memproses...';
+        errorEl.classList.remove('show');
+
+        try {
+          const data = await apiLogin(username, password);
+          showToast(`Selamat datang, ${data.username}!`, 'success');
+          setTimeout(() => redirectToDashboard(data.role), 500);
+        } catch (error) {
+          showError(error.message);
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Masuk';
+        }
+      });
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.classList.add('show');
+      }
+    });
+  </script>
+</body>
+
+</html>

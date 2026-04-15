@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Registrasi akun PolsriEduAI — Sistem Akademik Politeknik Sriwijaya">
+  <title>Daftar — PolsriEduAI</title>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+
+  <style>
+    .register-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 900px) {
+      .register-layout { grid-template-columns: 1fr; }
+      .register-visual { display: none; }
+    }
+
+    /* Left: particle visual */
+    .register-visual {
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--border-color);
+    }
+    .register-visual canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    .register-visual .visual-text {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    .register-visual .visual-brand {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    /* Right: form */
+    .register-form-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xl) var(--space-2xl);
+      position: relative;
+      overflow-y: auto;
+    }
+    .register-form-box {
+      width: 100%;
+      max-width: 480px;
+      padding: var(--space-xl) 0;
+    }
+    .reg-type-title {
+      font-size: var(--text-3xl);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-xs);
+      min-height: 1.2em;
+    }
+    .reg-type-cursor {
+      display: inline-block;
+      width: 4px;
+      height: 1em;
+      margin-left: 3px;
+      vertical-align: text-bottom;
+      border-radius: 2px;
+      animation: blink 0.75s step-end infinite, cursorColor 2s linear infinite;
+    }
+    .reg-type-cursor.done { animation: none; background: transparent; }
+    .reg-subtitle {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      margin-bottom: var(--space-xl);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .reg-subtitle.show { opacity: 1; }
+    .reg-back {
+      position: absolute;
+      top: var(--space-lg);
+      left: var(--space-xl);
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .reg-back:hover { color: var(--fg-primary); opacity: 1; }
+    .register-form-area {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.5s ease;
+    }
+    .register-form-area.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+    /* Tabs */
+    .reg-tabs {
+      display: flex;
+      gap: var(--space-xs);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      margin-bottom: var(--space-xl);
+      border: 1px solid var(--border-color);
+    }
+    .reg-tab {
+      flex: 1;
+      padding: 0.625rem;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--fg-secondary);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: transparent;
+      text-align: center;
+    }
+    .reg-tab:hover { color: var(--fg-primary); }
+    .reg-tab.active {
+      background: var(--fg-primary);
+      color: #fff;
+    }
+    .tab-content { display: none; }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .register-error {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-size: var(--text-sm);
+      color: var(--danger);
+      margin-bottom: var(--space-lg);
+      display: none;
+    }
+    .register-error.show {
+      display: block;
+      animation: shake 0.4s ease;
+    }
+    .register-footer {
+      margin-top: var(--space-xl);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .register-footer.show { opacity: 1; }
+
+    /* ── Token Verification Info Box ── */
+    .token-info-box {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(66, 133, 244, 0.04), rgba(52, 168, 83, 0.04));
+      border: 1px solid rgba(66, 133, 244, 0.15);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: tokenReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+    }
+    @keyframes tokenReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .token-info-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04, #ea4335);
+      background-size: 300% 100%;
+      animation: gradientShift 3s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .token-info-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--fg-primary);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .token-info-title .shield-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(66, 133, 244, 0.1);
+      font-size: 14px;
+      animation: shieldPulse 2s ease-in-out infinite;
+    }
+    @keyframes shieldPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(66, 133, 244, 0); }
+    }
+    .token-steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .token-step {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: var(--text-xs);
+      color: var(--fg-secondary);
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    .token-step.visible {
+      animation: stepSlideIn 0.4s ease forwards;
+    }
+    @keyframes stepSlideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .token-step-num {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--fg-primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    /* ── Form field animations ── */
+    .form-group {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    .form-group.field-visible {
+      animation: fieldReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fieldReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-layout">
+    <!-- Left: particle visual -->
+    <div class="register-visual">
+      <canvas id="reg-particles"></canvas>
+      <div class="visual-text">
+        <span class="visual-brand">PolsriEduAI</span>
+      </div>
+    </div>
+
+    <!-- Right: form -->
+    <div class="register-form-side">
+      <a href="login.html" class="reg-back">← Masuk</a>
+
+      <div class="register-form-box">
+        <div class="reg-type-title">
+          <span id="reg-type-target"></span><span class="reg-type-cursor" id="reg-cursor"></span>
+        </div>
+        <p class="reg-subtitle" id="reg-subtitle">Buat akun baru untuk mengakses sistem</p>
+
+        <div class="register-form-area" id="reg-form-area">
+          <!-- Tab pills -->
+          <div class="reg-tabs">
+            <button class="reg-tab active" data-tab="mahasiswa" id="tab-mahasiswa">Mahasiswa</button>
+            <button class="reg-tab" data-tab="dosen" id="tab-dosen">Dosen</button>
+          </div>
+
+          <div class="register-error" id="register-error"></div>
+
+          <!-- Mahasiswa Form -->
+          <div class="tab-content active" id="form-mahasiswa">
+            <!-- Token verification info -->
+            <div class="token-info-box" id="token-info-box">
+              <div class="token-info-title">
+                <span class="shield-icon">🛡</span>
+                Verifikasi Token
+              </div>
+              <div class="token-steps" id="token-steps">
+                <div class="token-step" data-delay="1000">
+                  <span class="token-step-num">1</span>
+                  <span>Isi data akademik lalu submit pendaftaran</span>
+                </div>
+                <div class="token-step" data-delay="1200">
+                  <span class="token-step-num">2</span>
+                  <span>Admin memverifikasi data Anda di PDDIKTI / berkas fisik</span>
+                </div>
+                <div class="token-step" data-delay="1400">
+                  <span class="token-step-num">3</span>
+                  <span>Jika disetujui, kode akses dikirim ke email Anda</span>
+                </div>
+                <div class="token-step" data-delay="1600">
+                  <span class="token-step-num">4</span>
+                  <span>Login menggunakan kode tersebut, lalu buat password baru</span>
+                </div>
+              </div>
+            </div>
+
+            <form id="register-form-mahasiswa" autocomplete="off">
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="mhs-email">Email</label><input type="email" id="mhs-email" class="form-input" placeholder="email@student.polsri.ac.id" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-username">Username</label><input type="text" id="mhs-username" class="form-input" placeholder="adinfarel" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="mhs-nim">NIM</label><input type="text" id="mhs-nim" class="form-input" placeholder="061240300XX" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-fullname">Nama Lengkap</label><input type="text" id="mhs-fullname" class="form-input" placeholder="Nama lengkap" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="mhs-prodi">Program Studi</label><input type="text" id="mhs-prodi" class="form-input" placeholder="Teknik Informatika" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-jurusan">Jurusan</label><input type="text" id="mhs-jurusan" class="form-input" placeholder="Teknik Komputer" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="mhs-semester">Semester</label><input type="number" id="mhs-semester" class="form-input" placeholder="4" min="1" max="14" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-entry-year">Tahun Masuk</label><input type="number" id="mhs-entry-year" class="form-input" placeholder="2024" min="2000" max="2030" required></div>
+              </div>
+              <button type="submit" class="btn btn-primary w-full btn-lg" id="btn-register-mhs">Daftar sebagai Mahasiswa</button>
+            </form>
+          </div>
+
+          <!-- Dosen Form -->
+          <div class="tab-content" id="form-dosen">
+            <form id="register-form-dosen" autocomplete="off">
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="dsn-email">Email</label><input type="email" id="dsn-email" class="form-input" placeholder="email@polsri.ac.id" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-username">Username</label><input type="text" id="dsn-username" class="form-input" placeholder="dosen_username" required></div>
+              </div>
+              <div class="form-group"><label class="form-label" for="dsn-password">Password</label><input type="password" id="dsn-password" class="form-input" placeholder="Minimal 6 karakter" required minlength="6"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="dsn-nidn">NIDN</label><input type="text" id="dsn-nidn" class="form-input" placeholder="0012345678" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-fullname">Nama Lengkap</label><input type="text" id="dsn-fullname" class="form-input" placeholder="Nama lengkap" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="dsn-prodi">Program Studi</label><input type="text" id="dsn-prodi" class="form-input" placeholder="Teknik Informatika" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-jurusan">Jurusan</label><input type="text" id="dsn-jurusan" class="form-input" placeholder="Teknik Komputer" required></div>
+              </div>
+              <div class="form-group"><label class="form-label" for="dsn-jabatan">Jabatan Fungsional</label><input type="text" id="dsn-jabatan" class="form-input" placeholder="Lektor / Asisten Ahli" required></div>
+              <button type="submit" class="btn btn-primary w-full btn-lg" id="btn-register-dsn">Daftar sebagai Dosen</button>
+            </form>
+          </div>
+
+          <div class="register-footer" id="reg-footer">
+            <p class="text-sm text-muted">
+              Sudah punya akun? <a href="login.html" style="color: var(--fg-primary); text-decoration: underline;">Masuk di sini</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/particles.js"></script>
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (isLoggedIn()) {
+        const role = getUserRole();
+        if (role) redirectToDashboard(role);
+        return;
+      }
+
+      // Particles — infinity shape
+      initParticles('reg-particles', {
+        count: 400,
+        size: 1.4,
+        speed: 0.02,
+        shape: 'infinity',
+        shapeScale: 0.35,
+        mouseRadius: 200,
+        mouseRepelForce: 0.06,
+        mouseMode: 'attract',
+        colors: [
+          'rgba(66, 133, 244, 0.6)',
+          'rgba(234, 67, 53, 0.4)',
+          'rgba(251, 188, 4, 0.4)',
+          'rgba(52, 168, 83, 0.4)',
+          'rgba(103, 58, 183, 0.3)',
+        ],
+        returnSpeed: 0.02,
+      });
+
+      // Typing
+      const phrase = "Buat Akun Baru";
+      const target = document.getElementById('reg-type-target');
+      const cursor = document.getElementById('reg-cursor');
+      let i = 0;
+
+      function typeChar() {
+        if (i < phrase.length) {
+          target.textContent += phrase[i]; i++;
+          setTimeout(typeChar, 50 + Math.random() * 30);
+        } else {
+          setTimeout(onDone, 200);
+        }
+      }
+
+      function onDone() {
+        cursor.classList.add('done');
+        setTimeout(() => document.getElementById('reg-subtitle').classList.add('show'), 100);
+        setTimeout(() => document.getElementById('reg-form-area').classList.add('show'), 300);
+        setTimeout(() => document.getElementById('reg-footer').classList.add('show'), 500);
+
+        // Animate form fields stagger
+        setTimeout(() => {
+          const fields = document.querySelectorAll('.tab-content.active .form-group');
+          fields.forEach((f, idx) => {
+            setTimeout(() => f.classList.add('field-visible'), idx * 80);
+          });
+        }, 600);
+
+        // Animate token steps
+        document.querySelectorAll('.token-step').forEach((step) => {
+          const delay = parseInt(step.dataset.delay) || 1000;
+          setTimeout(() => step.classList.add('visible'), delay);
+        });
+      }
+
+      setTimeout(typeChar, 400);
+
+      // Tab switching
+      const tabs = document.querySelectorAll('.reg-tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const errorEl = document.getElementById('register-error');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(`form-${tab.dataset.tab}`).classList.add('active');
+          errorEl.classList.remove('show');
+
+          // Animate new tab fields
+          setTimeout(() => {
+            const fields = document.querySelectorAll('.tab-content.active .form-group');
+            fields.forEach((f, idx) => {
+              f.classList.remove('field-visible');
+              setTimeout(() => f.classList.add('field-visible'), idx * 80);
+            });
+          }, 100);
+        });
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('role') === 'dosen') document.getElementById('tab-dosen').click();
+
+      // Mahasiswa register — NO PASSWORD FIELD, backend uses dummy_password + token
+      document.getElementById('register-form-mahasiswa').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-register-mhs');
+        btn.disabled = true; btn.textContent = 'Memproses...';
+        errorEl.classList.remove('show');
+        try {
+          await apiPost('/api/v1/auth/register/mahasiswa', {
+            email: document.getElementById('mhs-email').value.trim(),
+            username: document.getElementById('mhs-username').value.trim(),
+            password: 'TOKEN_VERIFIED_' + Date.now(),  // Placeholder — backend ignores this and uses secrets.token_urlsafe(16)
+            nim: document.getElementById('mhs-nim').value.trim(),
+            full_name: document.getElementById('mhs-fullname').value.trim(),
+            study_program: document.getElementById('mhs-prodi').value.trim(),
+            major: document.getElementById('mhs-jurusan').value.trim(),
+            semester: parseInt(document.getElementById('mhs-semester').value),
+            entry_year: parseInt(document.getElementById('mhs-entry-year').value),
+          });
+          showToast('Registrasi berhasil! Tunggu approval admin, kode akses akan dikirim ke email Anda.', 'success');
+          setTimeout(() => { window.location.href = 'login.html'; }, 2500);
+        } catch (error) {
+          showRegError(error.message);
+          btn.disabled = false; btn.textContent = 'Daftar sebagai Mahasiswa';
+        }
+      });
+
+      // Dosen register
+      document.getElementById('register-form-dosen').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-register-dsn');
+        btn.disabled = true; btn.textContent = 'Memproses...';
+        errorEl.classList.remove('show');
+        try {
+          await apiPost('/api/v1/auth/register/dosen', {
+            email: document.getElementById('dsn-email').value.trim(),
+            username: document.getElementById('dsn-username').value.trim(),
+            password: document.getElementById('dsn-password').value,
+            nidn: document.getElementById('dsn-nidn').value.trim(),
+            full_name: document.getElementById('dsn-fullname').value.trim(),
+            study_program: document.getElementById('dsn-prodi').value.trim(),
+            major: document.getElementById('dsn-jurusan').value.trim(),
+            position: document.getElementById('dsn-jabatan').value.trim(),
+          });
+          showToast('Registrasi berhasil! Silakan login.', 'success');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+        } catch (error) {
+          showRegError(error.message);
+          btn.disabled = false; btn.textContent = 'Daftar sebagai Dosen';
+        }
+      });
+
+      function showRegError(msg) {
+        errorEl.textContent = msg;
+        errorEl.classList.add('show');
+      }
+    });
+  </script>
+</body>
+</html>

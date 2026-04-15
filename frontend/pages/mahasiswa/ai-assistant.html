@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant — PolsriEduAI</title>
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/layout.css">
+
+  <style>
+    .chat-welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2xl);
+      text-align: center;
+      gap: var(--space-md);
+    }
+    .chat-welcome .welcome-icon {
+      font-size: 3rem;
+      font-family: var(--font-primary);
+      opacity: 0.3;
+      margin-bottom: var(--space-md);
+    }
+    .chat-welcome h3 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+    }
+    .chat-welcome p {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      max-width: 400px;
+    }
+    .intent-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      font-size: var(--text-xs);
+      border-radius: var(--radius-full);
+      font-family: var(--font-primary);
+    }
+    .intent-database {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--info);
+    }
+    .intent-rag {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+    }
+    .sources-list {
+      margin-top: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--border-color);
+    }
+    .sources-list span {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+    }
+    .source-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      margin: 2px;
+      color: var(--fg-secondary);
+      font-family: var(--font-primary);
+    }
+    .chat-input-bar button {
+      min-width: 44px;
+    }
+    .ai-answer-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle">☰</button>
+    <div class="mobile-overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">PolsriEduAI</div>
+        <div class="sidebar-role">Mahasiswa</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link">
+          <i class="link-icon">◉</i> Dashboard
+        </a>
+        <a href="absensi.html" class="sidebar-link">
+          <i class="link-icon">⬡</i> Absensi
+        </a>
+        <a href="ai-assistant.html" class="sidebar-link active">
+          <i class="link-icon">◈</i> AI Assistant
+        </a>
+        <a href="analytics.html" class="sidebar-link">
+          <i class="link-icon">◐</i> Analytics
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">-</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Loading...</div>
+            <div class="sidebar-user-role">mahasiswa</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+          <span>✕</span> Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1 class="topbar-title">AI Assistant</h1>
+          <p class="topbar-subtitle">Asisten akademik cerdas berbasis RAG</p>
+        </div>
+        <div class="topbar-actions">
+        </div>
+      </header>
+
+      <div class="chat-layout">
+        <!-- Quick Suggestions -->
+        <div class="chat-suggestions" id="chat-suggestions">
+          <button class="chip" data-q="Apa status UKT saya?">Status UKT saya?</button>
+          <button class="chip" data-q="Berapa total kehadiran saya?">Total kehadiran?</button>
+          <button class="chip" data-q="Apa syarat untuk mengambil skripsi?">Syarat skripsi?</button>
+          <button class="chip" data-q="Bagaimana prosedur cuti akademik?">Cuti akademik?</button>
+          <button class="chip" data-q="Jadwal ujian semester ini?">Jadwal UAS?</button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-container" id="chat-container">
+          <div class="chat-welcome" id="chat-welcome">
+            <div class="welcome-icon">◈</div>
+            <h3>Halo! Saya AI Assistant Anda</h3>
+            <p>Tanyakan apapun tentang akademik — informasi kampus, status akademik, syarat, prosedur, dan lainnya.</p>
+          </div>
+        </div>
+
+        <!-- Input Bar -->
+        <div class="chat-input-bar">
+          <input
+            type="text"
+            id="chat-input"
+            class="form-input"
+            placeholder="Ketik pertanyaan Anda..."
+            autocomplete="off"
+          >
+          <button class="btn btn-primary" id="btn-send" title="Kirim">
+            ↑
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/particles.js"></script>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await initDashboardPage(['mahasiswa']);
+      if (!user) return;
+
+      const chatContainer = document.getElementById('chat-container');
+      const chatInput = document.getElementById('chat-input');
+      const btnSend = document.getElementById('btn-send');
+      const welcomeEl = document.getElementById('chat-welcome');
+
+      // ── Quick Suggestion Chips ──
+      document.querySelectorAll('.chip[data-q]').forEach(chip => {
+        chip.addEventListener('click', () => {
+          chatInput.value = chip.dataset.q;
+          sendMessage();
+        });
+      });
+
+      // ── Send on Enter ──
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      btnSend.addEventListener('click', sendMessage);
+
+      async function sendMessage() {
+        const question = chatInput.value.trim();
+        if (!question) return;
+
+        // Hide welcome message
+        if (welcomeEl) welcomeEl.remove();
+
+        // Add user bubble
+        appendBubble(question, 'user');
+        chatInput.value = '';
+        chatInput.focus();
+
+        // Show typing indicator
+        const typingEl = showTyping();
+
+        // Disable input
+        chatInput.disabled = true;
+        btnSend.disabled = true;
+
+        try {
+          const data = await apiPost('/api/v1/agent/ask', { question });
+          
+          // Remove typing
+          typingEl.remove();
+
+          // Build AI reply
+          let replyHtml = `<div class="ai-answer-text">${escapeHtml(data.answer)}</div>`;
+
+          // Intent badge
+          if (data.intent) {
+            const intentClass = data.intent === 'database' ? 'intent-database' : 'intent-rag';
+            replyHtml += `<div class="chat-meta"><span class="intent-badge ${intentClass}">${data.intent}</span></div>`;
+          }
+
+          // Sources
+          if (data.sources && data.sources.length > 0) {
+            replyHtml += `<div class="sources-list"><span>Sumber:</span><br>`;
+            data.sources.forEach(s => {
+              replyHtml += `<span class="source-tag">${escapeHtml(s)}</span>`;
+            });
+            replyHtml += `</div>`;
+          }
+
+          appendBubble(replyHtml, 'ai', true);
+
+        } catch (error) {
+          typingEl.remove();
+          appendBubble(`Maaf, terjadi kesalahan: ${escapeHtml(error.message)}`, 'ai');
+        } finally {
+          chatInput.disabled = false;
+          btnSend.disabled = false;
+          chatInput.focus();
+        }
+      }
+
+      function appendBubble(content, role, isHtml = false) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble chat-bubble-${role}`;
+        if (isHtml) {
+          bubble.innerHTML = content;
+        } else {
+          bubble.textContent = content;
+        }
+        chatContainer.appendChild(bubble);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      function showTyping() {
+        const typing = document.createElement('div');
+        typing.className = 'typing-indicator';
+        typing.innerHTML = `
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        `;
+        chatContainer.appendChild(typing);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        return typing;
+      }
+    });
+  </script>
+</body>
+</html>

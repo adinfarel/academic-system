@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — PolsriEduAI</title>
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/layout.css">
+
+  <style>
+    .greeting {
+      padding: var(--space-2xl) var(--space-xl) var(--space-xl);
+    }
+    .greeting-hello {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: var(--space-sm);
+      opacity: 0;
+      animation: revealUp 0.6s ease 0.3s forwards;
+    }
+    .greeting-name {
+      font-size: clamp(1.8rem, 4vw, var(--text-4xl));
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: revealUp 0.7s ease 0.5s forwards;
+    }
+
+    .section-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin: 0 var(--space-xl) var(--space-xl);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .section-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .section-panel:hover {
+      border-color: var(--border-hover);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+    .panel-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .panel-header h3 { font-size: var(--text-xl); }
+    .panel-header .icon { opacity: 0.4; font-size: var(--text-xl); }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+    .toolbar-search {
+      position: relative;
+    }
+    .toolbar-search input {
+      width: 260px;
+      padding-left: 2.25rem;
+    }
+    .toolbar-search .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--fg-muted);
+      font-size: var(--text-sm);
+      pointer-events: none;
+    }
+
+    .table tbody tr {
+      opacity: 0;
+      animation: revealUp 0.35s ease forwards;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .table tbody tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    .rag-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+    .rag-stat {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      transition: all 0.3s ease;
+    }
+    .rag-stat:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .rag-stat .rag-label {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-sm);
+    }
+    .rag-stat .rag-value {
+      font-size: var(--text-xl);
+      font-weight: 400;
+    }
+
+    .modal-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    @media (max-width: 480px) {
+      .modal-form-grid { grid-template-columns: 1fr; }
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border-color);
+      transition: padding 0.2s ease;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row:hover { padding-left: var(--space-sm); }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <button class="sidebar-toggle">☰</button>
+    <div class="mobile-overlay"></div>
+
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">PolsriEduAI</div>
+        <div class="sidebar-role">Administrator</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link active">
+          <i class="link-icon">◉</i> Dashboard
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">-</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Loading...</div>
+            <div class="sidebar-user-role">admin</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+          <span>✕</span> Keluar
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content" style="background: var(--bg-primary);">
+
+      <div class="greeting">
+        <p class="greeting-hello">administrator</p>
+        <h1 class="greeting-name" id="greeting-name">—</h1>
+      </div>
+
+      <!-- ══ STUDENTS ══ -->
+      <div class="section-panel" id="panel-students">
+        <div class="panel-header">
+          <div class="panel-header-left"><span class="icon">{ }</span><h3>Manajemen Mahasiswa</h3></div>
+          <span class="text-xs text-muted" id="student-count">—</span>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-search">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="student-search" class="form-input" placeholder="Cari NIM atau nama...">
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table">
+            <thead><tr>
+              <th>NIM</th><th>Nama</th><th>Program Studi</th><th>Semester</th><th>UKT</th><th>Status</th>
+            </tr></thead>
+            <tbody id="student-body">
+              <tr><td colspan="6" class="text-center text-muted" style="padding:var(--space-xl);">Memuat...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="student-pagination"></div>
+      </div>
+
+      <!-- ══ LECTURERS ══ -->
+      <div class="section-panel" id="panel-lecturers">
+        <div class="panel-header">
+          <div class="panel-header-left"><span class="icon">◎</span><h3>Data Dosen</h3></div>
+        </div>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead><tr>
+              <th>NIDN</th><th>Nama</th><th>Program Studi</th><th>Jabatan</th><th>Status</th>
+            </tr></thead>
+            <tbody id="lecturer-body">
+              <tr><td colspan="5" class="text-center text-muted" style="padding:var(--space-xl);">Memuat...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ RAG INDEXER ══ -->
+      <div class="section-panel" id="panel-rag">
+        <div class="panel-header">
+          <div class="panel-header-left"><span class="icon">◈</span><h3>RAG Knowledge Base</h3></div>
+        </div>
+
+        <div class="rag-stats" id="rag-stats">
+          <div class="rag-stat"><div class="rag-label">Status</div><div class="rag-value" id="rag-status">—</div></div>
+          <div class="rag-stat"><div class="rag-label">Total Chunks</div><div class="rag-value" id="rag-chunks">—</div></div>
+          <div class="rag-stat"><div class="rag-label">Pesan</div><div class="rag-value" id="rag-msg" style="font-size:var(--text-sm);">—</div></div>
+        </div>
+
+        <div style="display:flex;gap:var(--space-md);">
+          <button class="btn" id="btn-rag-refresh">Refresh</button>
+          <button class="btn btn-primary" id="btn-rag-reindex">Re-index</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══ DETAIL MODAL ══ -->
+  <div class="modal-overlay" id="modal-student">
+    <div class="modal" style="max-width:600px;">
+      <div class="modal-header">
+        <h3 id="modal-student-title">Detail</h3>
+        <button class="modal-close" onclick="closeStudentModal()">✕</button>
+      </div>
+      <div id="modal-student-body"><div class="spinner" style="margin:var(--space-xl) auto;"></div></div>
+      <div id="modal-student-actions" style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);"></div>
+    </div>
+  </div>
+
+  <!-- ══ EDIT MODAL ══ -->
+  <div class="modal-overlay" id="modal-edit">
+    <div class="modal" style="max-width:600px;">
+      <div class="modal-header">
+        <h3>Edit Mahasiswa</h3>
+        <button class="modal-close" onclick="closeEditModal()">✕</button>
+      </div>
+      <form id="edit-student-form">
+        <div class="modal-form-grid">
+          <div class="form-group"><label class="form-label">NIM</label><input type="text" id="edit-nim" class="form-input" disabled></div>
+          <div class="form-group"><label class="form-label">Nama</label><input type="text" id="edit-fullname" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Program Studi</label><input type="text" id="edit-prodi" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Jurusan</label><input type="text" id="edit-jurusan" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Semester</label><input type="number" id="edit-semester" class="form-input" min="1" max="14"></div>
+          <div class="form-group"><label class="form-label">Tahun Masuk</label><input type="number" id="edit-entry-year" class="form-input" min="2000" max="2030"></div>
+          <div class="form-group"><label class="form-label">Status UKT</label><select id="edit-ukt" class="form-input form-select"><option value="true">Lunas</option><option value="false">Belum Lunas</option></select></div>
+          <div class="form-group"><label class="form-label">Status Aktif</label><select id="edit-active" class="form-input form-select"><option value="true">Aktif</option><option value="false">Non-Aktif</option></select></div>
+        </div>
+        <div style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);">
+          <button type="submit" class="btn btn-primary" id="btn-save-edit">Simpan</button>
+          <button type="button" class="btn" onclick="closeEditModal()">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../../assets/js/particles.js"></script>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script>
+    let studentSkip = 0;
+    const studentLimit = 10;
+    let currentEditNim = null;
+
+    function openStudentModal() { document.getElementById('modal-student').classList.add('active'); }
+    function closeStudentModal() { document.getElementById('modal-student').classList.remove('active'); }
+    function openEditModal() { document.getElementById('modal-edit').classList.add('active'); }
+    function closeEditModal() { document.getElementById('modal-edit').classList.remove('active'); }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await initDashboardPage(['admin']);
+      if (!user) return;
+
+      document.getElementById('greeting-name').textContent = user.username;
+
+      // Stagger panel reveals
+      document.querySelectorAll('.section-panel').forEach((p, i) => {
+        setTimeout(() => p.classList.add('visible'), 700 + i * 200);
+      });
+
+      // ══ STUDENTS ══
+      async function loadStudents(skip = 0) {
+        try {
+          const data = await apiGet(`/api/v1/academic/mahasiswa?skip=${skip}&limit=${studentLimit}`);
+          const tbody = document.getElementById('student-body');
+
+          if (!data || data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:var(--space-xl);color:var(--fg-muted);">Tidak ada data.</td></tr>`;
+            return;
+          }
+
+          document.getElementById('student-count').textContent = `${skip + 1}–${skip + data.length}`;
+          tbody.innerHTML = data.map((s, i) => `
+            <tr style="animation-delay:${i * 0.04}s" onclick="viewStudent('${escapeHtml(s.nim)}')">
+              <td>${escapeHtml(s.nim)}</td>
+              <td>${escapeHtml(s.full_name)}</td>
+              <td>${escapeHtml(s.study_program)}</td>
+              <td>${s.semester}</td>
+              <td>${s.status_ukt ? '<span class="badge badge-success">Lunas</span>' : '<span class="badge badge-danger">Belum</span>'}</td>
+              <td>${s.activate_status ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-danger">Non-Aktif</span>'}</td>
+            </tr>
+          `).join('');
+
+          document.getElementById('student-pagination').innerHTML = `
+            <button class="btn btn-sm" ${skip === 0 ? 'disabled' : ''} onclick="prevPage()">← Prev</button>
+            <span class="page-info">Halaman ${Math.floor(skip / studentLimit) + 1}</span>
+            <button class="btn btn-sm" ${data.length < studentLimit ? 'disabled' : ''} onclick="nextPage()">Next →</button>
+          `;
+        } catch (error) { showToast(error.message, 'error'); }
+      }
+
+      window.prevPage = () => { studentSkip = Math.max(0, studentSkip - studentLimit); loadStudents(studentSkip); };
+      window.nextPage = () => { studentSkip += studentLimit; loadStudents(studentSkip); };
+
+      window.viewStudent = async (nim) => {
+        openStudentModal();
+        document.getElementById('modal-student-body').innerHTML = '<div class="spinner" style="margin:var(--space-xl) auto;"></div>';
+        try {
+          const s = await apiGet(`/api/v1/academic/mahasiswa/${encodeURIComponent(nim)}`);
+          document.getElementById('modal-student-title').textContent = s.full_name;
+          document.getElementById('modal-student-body').innerHTML = [
+            ['NIM', s.nim], ['Nama', s.full_name], ['Program Studi', s.study_program],
+            ['Jurusan', s.major || '-'], ['Semester', s.semester], ['Tahun Masuk', s.entry_year],
+            ['UKT', s.status_ukt ? '<span class="badge badge-success">Lunas</span>' : '<span class="badge badge-danger">Belum</span>'],
+            ['Status', s.activate_status ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-danger">Non-Aktif</span>'],
+          ].map(([l, v], i) => `<div class="detail-row" style="animation:revealUp 0.3s ease ${i*0.05}s both"><span class="text-muted text-sm">${l}</span><span class="text-sm">${v}</span></div>`).join('');
+          document.getElementById('modal-student-actions').innerHTML = `
+            <button class="btn btn-primary btn-sm" onclick="editStudent('${escapeHtml(s.nim)}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteStudent('${escapeHtml(s.nim)}')">Hapus</button>
+          `;
+        } catch (error) {
+          document.getElementById('modal-student-body').innerHTML = `<p class="text-muted">Gagal: ${escapeHtml(error.message)}</p>`;
+        }
+      };
+
+      window.editStudent = async (nim) => {
+        closeStudentModal();
+        currentEditNim = nim;
+        try {
+          const s = await apiGet(`/api/v1/academic/mahasiswa/${encodeURIComponent(nim)}`);
+          document.getElementById('edit-nim').value = s.nim;
+          document.getElementById('edit-fullname').value = s.full_name;
+          document.getElementById('edit-prodi').value = s.study_program;
+          document.getElementById('edit-jurusan').value = s.major || '';
+          document.getElementById('edit-semester').value = s.semester;
+          document.getElementById('edit-entry-year').value = s.entry_year;
+          document.getElementById('edit-ukt').value = s.status_ukt ? 'true' : 'false';
+          document.getElementById('edit-active').value = s.activate_status ? 'true' : 'false';
+          openEditModal();
+        } catch (error) { showToast(error.message, 'error'); }
+      };
+
+      document.getElementById('edit-student-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentEditNim) return;
+        const btn = document.getElementById('btn-save-edit');
+        btn.disabled = true; btn.textContent = 'Menyimpan...';
+        try {
+          await apiPut(`/api/v1/academic/mahasiswa/${encodeURIComponent(currentEditNim)}`, {
+            full_name: document.getElementById('edit-fullname').value.trim(),
+            study_program: document.getElementById('edit-prodi').value.trim(),
+            major: document.getElementById('edit-jurusan').value.trim(),
+            semester: parseInt(document.getElementById('edit-semester').value),
+            entry_year: parseInt(document.getElementById('edit-entry-year').value),
+            status_ukt: document.getElementById('edit-ukt').value === 'true',
+            activate_status: document.getElementById('edit-active').value === 'true',
+          });
+          showToast('Berhasil diperbarui.', 'success');
+          closeEditModal(); loadStudents(studentSkip);
+        } catch (error) { showToast(error.message, 'error'); }
+        finally { btn.disabled = false; btn.textContent = 'Simpan'; }
+      });
+
+      window.deleteStudent = async (nim) => {
+        if (!confirm(`Hapus mahasiswa NIM ${nim}?`)) return;
+        try {
+          await apiDelete(`/api/v1/academic/mahasiswa/${encodeURIComponent(nim)}`);
+          showToast('Dihapus.', 'success');
+          closeStudentModal(); loadStudents(studentSkip);
+        } catch (error) { showToast(error.message, 'error'); }
+      };
+
+      document.getElementById('student-search').addEventListener('input', debounce(() => {
+        studentSkip = 0; loadStudents(0);
+      }, 400));
+
+      loadStudents(0);
+
+      // ══ LECTURERS ══
+      async function loadLecturers() {
+        try {
+          const data = await apiGet('/api/v1/academic/dosen');
+          const tbody = document.getElementById('lecturer-body');
+          if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-xl);color:var(--fg-muted);">Tidak ada data.</td></tr>'; return; }
+          tbody.innerHTML = data.map((d, i) => `
+            <tr style="animation-delay:${i * 0.04}s">
+              <td>${escapeHtml(d.nidn)}</td>
+              <td>${escapeHtml(d.full_name)}</td>
+              <td>${escapeHtml(d.study_program)}</td>
+              <td>${escapeHtml(d.position || '-')}</td>
+              <td>${d.activate_status ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-danger">Non-Aktif</span>'}</td>
+            </tr>
+          `).join('');
+        } catch (error) { showToast('Gagal memuat dosen: ' + error.message, 'error'); }
+      }
+      loadLecturers();
+
+      // ══ RAG ══
+      async function loadRag() {
+        try {
+          const data = await apiGet('/api/v1/agent/status');
+          document.getElementById('rag-status').innerHTML = data.status === 'ready' ? '<span class="badge badge-success">Ready</span>' : `<span class="badge badge-warning">${escapeHtml(data.status)}</span>`;
+          document.getElementById('rag-chunks').textContent = data.total_chunks || 0;
+          document.getElementById('rag-msg').textContent = data.message || '-';
+        } catch { document.getElementById('rag-status').innerHTML = '<span class="badge badge-danger">Error</span>'; }
+      }
+
+      document.getElementById('btn-rag-refresh').addEventListener('click', () => { loadRag(); showToast('Refreshed.', 'info'); });
+      document.getElementById('btn-rag-reindex').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-rag-reindex');
+        btn.disabled = true; btn.textContent = 'Indexing...';
+        try { const d = await apiPost('/api/v1/agent/index', {}); showToast(d.message || 'Done!', 'success'); loadRag(); }
+        catch (e) { showToast(e.message, 'error'); }
+        finally { btn.disabled = false; btn.textContent = 'Re-index'; }
+      });
+      loadRag();
+
+      // Close modals on overlay click
+      document.querySelectorAll('.modal-overlay').forEach(o => {
+        o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
+      });
+    });
+  </script>
+</body>
+</html>
