@@ -71,6 +71,8 @@ class Mahasiswa(Base):
         back_populates="mahasiswa",
         cascade="all, delete-orphan",
     )
+    grade = relationship("Grade", back_populates="mahasiswa", cascade="all, delete-orphan")
+    ips_list = relationship("IpsSemester", back_populates="mahasiswa", cascade="all, delete-orphan", order_by="IpsSemester.semester_ke")
     
     def __repr__(self):
         return f"<Mahasiswa nim={self.nim} nama={self.full_name}>"

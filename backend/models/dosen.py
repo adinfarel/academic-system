@@ -64,6 +64,10 @@ class Dosen(Base):
         back_populates="dosen",
         cascade="all, delete-orphan",
     )
+    grade_given = relationship(
+        "Grade",
+        back_populates="dosen"
+    )
     
     def __repr__(self):
         return f"<Dosen nidn={self.nidn} nama={self.full_name}>"
