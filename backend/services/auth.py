@@ -9,6 +9,7 @@ Principle: Router = thin, Service = fat
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import secrets
 
 from jose import JWSError, jwt
 from passlib.context import CryptContext
@@ -17,13 +18,22 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from backend.config import get_settings
-from backend.models.user import User, UserRole
+from backend.models.user import User, UserRole, RegistrationStatus
+from backend.services.email import (
+    generate_verification_code,
+    send_approval_email,
+    send_rejection_email,
+)
 from backend.models.mahasiswa import Mahasiswa
 from backend.models.dosen import Dosen
 from backend.utils.logger import get_logger
 
 # LOGGER
 logger = get_logger(__name__)
+
+# DUMMY PW
+# TODO: Yall can replace this Field: Password, cause for production required me as a dev prefer use dummy to prevent subtle bug >.<
+dummy_password = secrets.token_urlsafe(16)
 
 # SETTINGS
 settings = get_settings()
@@ -304,8 +314,10 @@ def register_mahasiswa(
         new_user = User(
             email=data["email"],
             username=data["username"].lower(),
-            hashed_password=hash_password(data["password"]),
-            role=UserRole.MAHASISWA
+            hashed_password=hash_password(dummy_password),
+            role=UserRole.MAHASISWA,
+            is_active=False,
+            registration_status=RegistrationStatus.PENDING,
         )
         db.add(new_user)
         db.flush()
@@ -335,6 +347,184 @@ def register_mahasiswa(
             detail=f"Fail create account: {str(e)}"
         )
 
+def approve_mahasiswa(
+    db: Session,
+    user_id: int
+) -> dict:
+    """
+    Admin approves student registration.
+
+    Flow:
+    1. Search for user by ID
+    2. Validate the status is still PENDING
+    3. Generate an 8-character verification code
+    4. Update status → APPROVED, activate account
+    5. Send an email containing the code to the student
+    6. Return the result
+
+    Why is the code used as a temporary password?
+    → Admin does not need to know the student's password
+    → Students have full control over their password
+    → must_change_password ensures they change it upon first login
+
+    Args:
+        db: database session
+        user_id: ID of the user to be approved
+
+    Returns:
+        dict: approval result + email delivery info
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found."
+        )
+    
+    if user.registration_status != RegistrationStatus.PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User aldready in status: {user.registration_status}"
+        )
+    
+    code = generate_verification_code() # 8 Random code from technique crypthograph
+    
+    user.is_active = True
+    user.registration_status = RegistrationStatus.APPROVED
+    user.verification_code = code
+    user.verification_code_sent_at = datetime.now(timezone.utc)
+    user.hashed_password = hash_password(code)
+    user.must_change_password = True
+    
+    db.commit()
+    
+    mahasiswa = user.mahasiswa
+    if not mahasiswa:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Data student not found."
+        )
+    mahasiswa.activate_status = True
+    
+    email_sent = send_approval_email(
+        to_email=user.email,
+        nama=mahasiswa.full_name,
+        nim=mahasiswa.nim,
+        verification_code=code
+    )
+    
+    return {
+        "message": f"Mahasiswa {mahasiswa.full_name} success approve.",
+        "email_sent": email_sent,
+        "verification_code": code,
+        "user_id": user.id,
+    }
+
+def reject_mahasiswa(
+    db: Session,
+    user_id: int,
+    reason: str = None,
+):
+    """
+    The admin rejected the student's registration.
+
+    The user remains in the database with a REJECTED status.
+    Why isn't it deleted?
+    → Audit trail — the admin can view the registration history
+    → If the student complains, there's proof of registration
+    → Can be re-approved if the rejection was incorrect
+
+    Args:
+        db: database session
+        user_id: ID of the rejected user
+        reason: Reason for rejection (optional)
+
+    Returns:
+        dict: rejection result
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found."
+        )
+    
+    if user.registration_status != RegistrationStatus.PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User aldready in status: {user.registration_status}"
+        )
+    
+    user.registration_status = RegistrationStatus.REJECTED
+    user.is_active = False
+    user.rejection_reason = reason
+    db.commit()
+    
+    mahasiswa = user.mahasiswa
+    email_sent = False
+
+    if mahasiswa:
+        email_sent = send_rejection_email(
+            to_email=user.email,
+            nama=mahasiswa.full_name,
+            reason=reason
+        )
+
+    return {
+        "message": "Pendaftaran ditolak",
+        "email_sent": email_sent,
+        "user_id": user.id,
+    }
+
+def change_password_first_login(
+    db: Session,
+    user: User,
+    new_password: str
+) -> dict:
+    """
+    Change password on first login after approval.
+
+    Called when must_change_password=True and the student submits a new password.
+
+    Validation:
+    - New password must be at least 8 characters
+    - New password must not be the same as the old verification code
+
+    Args:
+        db: database session
+        user: User object currently logged in
+        new_password: new password from the student
+
+    Returns:
+        dict: confirmation successful
+    """
+    if len(new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password at least 8 char."
+        )
+
+    # Pastikan password baru berbeda dari kode lama
+    if user.verification_code and verify_password(
+        new_password, hash_password(user.verification_code)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password dont't same with verification code"
+        )
+
+    user.hashed_password = hash_password(new_password)
+    user.must_change_password = False
+    user.verification_code = None       
+    user.verification_code_sent_at = None
+    user.registration_status = RegistrationStatus.ACTIVE
+
+    db.commit()
+
+    return {"message": "Password updated successfully. Please log in again."}
+    
 def register_dosen(
     db: Session,
     data: dict,

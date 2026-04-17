@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,45 +11,33 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
   <style>
-    /* ── Analytics Hero Bar ── */
+    /* ── Analytics Hero — matches B&W global theme ── */
     .analytics-hero {
       position: relative;
       overflow: hidden;
-      padding: var(--space-2xl) var(--space-xl);
-      background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
-      color: #fff;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: var(--space-2xl) var(--space-xl) var(--space-xl);
     }
-    .analytics-hero::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at 30% 50%, rgba(66,133,244,0.08), transparent 50%),
-                  radial-gradient(ellipse at 70% 50%, rgba(52,168,83,0.06), transparent 50%);
-      animation: heroAmbient 8s ease-in-out infinite alternate;
-    }
-    @keyframes heroAmbient {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(-2%, 1%); }
-    }
+
     .analytics-hero-content {
       position: relative;
       z-index: 1;
       max-width: 1100px;
       margin: 0 auto;
     }
+
     .analytics-hero h1 {
-      font-size: var(--text-3xl);
-      font-weight: 700;
+      font-size: clamp(1.8rem, 4vw, var(--text-4xl));
+      font-weight: 600;
       letter-spacing: -0.03em;
+      color: var(--fg-primary);
       margin-bottom: var(--space-xs);
       opacity: 0;
       animation: revealUp 0.6s ease 0.2s forwards;
     }
+
     .analytics-hero p {
       font-size: var(--text-sm);
-      color: rgba(255,255,255,0.5);
+      color: var(--fg-muted);
       opacity: 0;
       animation: revealUp 0.6s ease 0.4s forwards;
     }
@@ -58,16 +47,23 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: var(--space-md);
-      padding: var(--space-xl);
+      padding: 0 var(--space-xl) var(--space-xl);
       max-width: 1100px;
       margin: 0 auto;
     }
+
     @media (max-width: 768px) {
-      .quick-stats { grid-template-columns: repeat(2, 1fr); }
+      .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
+
     @media (max-width: 480px) {
-      .quick-stats { grid-template-columns: 1fr; }
+      .quick-stats {
+        grid-template-columns: 1fr;
+      }
     }
+
     .quick-stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -79,26 +75,30 @@
       transform: translateY(20px);
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .quick-stat-card.visible {
       opacity: 1;
       transform: translateY(0);
     }
+
     .quick-stat-card:hover {
       border-color: var(--border-hover);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
+
     .quick-stat-card::after {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--fg-primary);
+      opacity: 0.15;
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
-    .quick-stat-card:nth-child(1)::after { background: #4285f4; }
-    .quick-stat-card:nth-child(2)::after { background: #34a853; }
-    .quick-stat-card:nth-child(3)::after { background: #fbbc04; }
-    .quick-stat-card:nth-child(4)::after { background: #ea4335; }
+
     .qs-label {
       font-size: var(--text-xs);
       color: var(--fg-muted);
@@ -106,10 +106,13 @@
       letter-spacing: 0.08em;
       margin-bottom: var(--space-sm);
     }
+
     .qs-value {
       font-size: var(--text-2xl);
       font-weight: 600;
+      color: var(--fg-primary);
     }
+
     .qs-sub {
       font-size: var(--text-xs);
       color: var(--fg-secondary);
@@ -125,9 +128,13 @@
       max-width: 1100px;
       margin: 0 auto;
     }
+
     @media (max-width: 900px) {
-      .chart-grid { grid-template-columns: 1fr; }
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     .chart-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -139,16 +146,20 @@
       position: relative;
       overflow: hidden;
     }
+
     .chart-card.visible {
       opacity: 1;
       transform: translateY(0);
     }
+
     .chart-card:hover {
       border-color: var(--border-hover);
     }
+
     .chart-card.full-width {
       grid-column: 1 / -1;
     }
+
     .chart-card h3 {
       font-size: var(--text-base);
       font-weight: 600;
@@ -156,20 +167,25 @@
       display: flex;
       align-items: center;
       gap: var(--space-sm);
+      color: var(--fg-primary);
     }
+
     .chart-card h3 .chart-icon {
       font-size: var(--text-lg);
-      opacity: 0.5;
+      opacity: 0.4;
     }
+
     .chart-card .chart-desc {
       font-size: var(--text-xs);
       color: var(--fg-muted);
       margin-bottom: var(--space-lg);
     }
+
     .chart-canvas-wrapper {
       position: relative;
       width: 100%;
     }
+
     .chart-canvas-wrapper canvas {
       width: 100% !important;
       max-height: 300px;
@@ -179,6 +195,7 @@
     .heatmap-wrapper {
       overflow-x: auto;
     }
+
     .heatmap-grid {
       display: grid;
       grid-template-columns: repeat(52, 14px);
@@ -186,22 +203,40 @@
       gap: 2px;
       margin: var(--space-md) 0;
     }
+
     .heatmap-cell {
       width: 14px;
       height: 14px;
       border-radius: 2px;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       cursor: default;
     }
+
     .heatmap-cell:hover {
-      transform: scale(1.5);
+      transform: scale(1.6);
       z-index: 2;
     }
-    .heatmap-level-0 { background: #f0f0f0; }
-    .heatmap-level-1 { background: rgba(34, 197, 94, 0.25); }
-    .heatmap-level-2 { background: rgba(34, 197, 94, 0.5); }
-    .heatmap-level-3 { background: rgba(34, 197, 94, 0.75); }
-    .heatmap-level-4 { background: rgba(34, 197, 94, 1); }
+
+    .heatmap-level-0 {
+      background: var(--bg-secondary);
+    }
+
+    .heatmap-level-1 {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .heatmap-level-2 {
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .heatmap-level-3 {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .heatmap-level-4 {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
     .heatmap-legend {
       display: flex;
       align-items: center;
@@ -210,11 +245,13 @@
       color: var(--fg-muted);
       margin-top: var(--space-sm);
     }
+
     .heatmap-legend-cell {
       width: 12px;
       height: 12px;
       border-radius: 2px;
     }
+
     .heatmap-months {
       display: flex;
       gap: 0;
@@ -222,6 +259,7 @@
       color: var(--fg-muted);
       margin-bottom: var(--space-xs);
     }
+
     .heatmap-months span {
       width: calc(14px * 4 + 2px * 4);
       text-align: left;
@@ -233,31 +271,40 @@
       flex-direction: column;
       gap: var(--space-sm);
     }
+
     .alert-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: var(--space-md);
       border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      transition: all var(--transition-fast);
       animation: fadeInUp 0.4s ease;
     }
+
+    .alert-item:hover {
+      border-color: var(--border-hover);
+    }
+
     .alert-item-danger {
-      background: rgba(239, 68, 68, 0.06);
-      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-left: 3px solid var(--danger);
     }
+
     .alert-item-warning {
-      background: rgba(234, 179, 8, 0.06);
-      border: 1px solid rgba(234, 179, 8, 0.15);
+      border-left: 3px solid var(--warning);
     }
+
     .alert-item-success {
-      background: rgba(34, 197, 94, 0.04);
-      border: 1px solid rgba(34, 197, 94, 0.1);
+      border-left: 3px solid var(--success);
     }
+
     .alert-item-left {
       display: flex;
       align-items: center;
       gap: var(--space-md);
     }
+
     .alert-item-icon {
       width: 36px;
       height: 36px;
@@ -267,33 +314,27 @@
       justify-content: center;
       font-size: var(--text-sm);
       flex-shrink: 0;
+      background: var(--bg-secondary);
+      color: var(--fg-secondary);
     }
-    .alert-item-danger .alert-item-icon {
-      background: rgba(239, 68, 68, 0.12);
-      color: var(--danger);
-    }
-    .alert-item-warning .alert-item-icon {
-      background: rgba(234, 179, 8, 0.12);
-      color: var(--warning);
-    }
-    .alert-item-success .alert-item-icon {
-      background: rgba(34, 197, 94, 0.12);
-      color: var(--success);
-    }
+
     .alert-mk-name {
       font-size: var(--text-sm);
       font-weight: 500;
+      color: var(--fg-primary);
     }
+
     .alert-mk-detail {
       font-size: var(--text-xs);
       color: var(--fg-muted);
     }
+
     .alert-pct {
       font-size: var(--text-sm);
       font-weight: 600;
     }
-    
-    /* ── Gauge chart (donut center text) ── */
+
+    /* ── Gauge chart ── */
     .gauge-wrapper {
       position: relative;
       display: flex;
@@ -302,14 +343,18 @@
       max-width: 220px;
       margin: 0 auto;
     }
+
     .gauge-center-text {
       position: absolute;
       text-align: center;
     }
+
     .gauge-center-text .gauge-pct {
       font-size: var(--text-2xl);
       font-weight: 700;
+      color: var(--fg-primary);
     }
+
     .gauge-center-text .gauge-label {
       font-size: var(--text-xs);
       color: var(--fg-muted);
@@ -319,17 +364,18 @@
     .dummy-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
       padding: 2px 8px;
       font-size: 10px;
-      background: rgba(59, 130, 246, 0.08);
-      color: var(--info);
+      background: var(--bg-secondary);
+      color: var(--fg-muted);
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-full);
       font-weight: 600;
       letter-spacing: 0.04em;
     }
   </style>
 </head>
+
 <body>
   <div class="dashboard-layout">
     <button class="sidebar-toggle">☰</button>
@@ -362,7 +408,8 @@
             <div class="sidebar-user-role">mahasiswa</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()"
+          style="justify-content: flex-start; gap: var(--space-md);">
           <span>✕</span> Keluar
         </button>
       </div>
@@ -370,10 +417,10 @@
 
     <main class="main-content" style="background: var(--bg-primary);">
 
-      <!-- ══ ANALYTICS HERO ══ -->
+      <!-- ══ HERO ══ -->
       <div class="analytics-hero">
         <div class="analytics-hero-content">
-          <h1 id="analytics-title">📊 Analytics Dashboard</h1>
+          <h1 id="analytics-title">Analytics Dashboard</h1>
           <p>Performa akademik & kehadiran Anda dalam satu pandangan</p>
         </div>
       </div>
@@ -407,7 +454,7 @@
 
         <!-- IPK per Semester (Line) -->
         <div class="chart-card" id="chart-ipk">
-          <h3><span class="chart-icon">📈</span> IPK per Semester <span class="dummy-badge">DUMMY</span></h3>
+          <h3><span class="chart-icon">◉</span> IPK per Semester <span class="dummy-badge">SIMULASI</span></h3>
           <p class="chart-desc">Tren indeks prestasi kumulatif dari semester ke semester</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-ipk"></canvas>
@@ -416,7 +463,7 @@
 
         <!-- IPS per Semester (Grouped Bar) -->
         <div class="chart-card" id="chart-ips">
-          <h3><span class="chart-icon">📉</span> IPS per Semester <span class="dummy-badge">DUMMY</span></h3>
+          <h3><span class="chart-icon">◎</span> IPS per Semester <span class="dummy-badge">SIMULASI</span></h3>
           <p class="chart-desc">Perbandingan IPS dan IPK tiap semester</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-ips"></canvas>
@@ -425,8 +472,8 @@
 
         <!-- Kehadiran per MK (Bar) -->
         <div class="chart-card" id="chart-kehadiran">
-          <h3><span class="chart-icon">📊</span> Kehadiran per Mata Kuliah</h3>
-          <p class="chart-desc">Total kehadiran untuk setiap mata kuliah yang diikuti</p>
+          <h3><span class="chart-icon">⬡</span> Kehadiran per Mata Kuliah</h3>
+          <p class="chart-desc">Total kehadiran setiap mata kuliah yang diikuti</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-kehadiran"></canvas>
           </div>
@@ -434,7 +481,7 @@
 
         <!-- Persentase Kehadiran (Donut) -->
         <div class="chart-card" id="chart-gauge">
-          <h3><span class="chart-icon">🎯</span> Persentase Kehadiran</h3>
+          <h3><span class="chart-icon">◐</span> Persentase Kehadiran</h3>
           <p class="chart-desc">Target minimum kehadiran: 75%</p>
           <div class="gauge-wrapper">
             <canvas id="canvas-gauge" style="max-height: 220px;"></canvas>
@@ -447,8 +494,8 @@
 
         <!-- Heatmap Absensi (GitHub-style) -->
         <div class="chart-card full-width" id="chart-heatmap">
-          <h3><span class="chart-icon">🗓️</span> Heatmap Absensi</h3>
-          <p class="chart-desc">Kontribusi kehadiran Anda sepanjang tahun — seperti GitHub contribution graph</p>
+          <h3><span class="chart-icon">☰</span> Heatmap Absensi</h3>
+          <p class="chart-desc">Kontribusi kehadiran sepanjang tahun — mirip GitHub contribution graph</p>
           <div class="heatmap-wrapper">
             <div class="heatmap-months" id="heatmap-months"></div>
             <div class="heatmap-grid" id="heatmap-grid"></div>
@@ -464,9 +511,9 @@
           </div>
         </div>
 
-        <!-- Alert < 75% (List) -->
+        <!-- Alert < 75% -->
         <div class="chart-card full-width" id="chart-alerts">
-          <h3><span class="chart-icon">⚠️</span> Status Kehadiran per MK</h3>
+          <h3><span class="chart-icon">⚡</span> Status Kehadiran per MK</h3>
           <p class="chart-desc">Mata kuliah dengan kehadiran di bawah 75% membutuhkan perhatian khusus</p>
           <div class="alert-list" id="alert-list">
             <div class="text-muted text-sm" style="padding: var(--space-lg); text-align: center;">Memuat data...</div>
@@ -483,12 +530,22 @@
   <script src="../../assets/js/api.js"></script>
   <script src="../../assets/js/auth.js"></script>
   <script>
-    // ── Chart.js Global Config ──
+    // ── Chart.js Global — B&W theme ──
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.font.size = 12;
     Chart.defaults.color = '#999';
     Chart.defaults.plugins.legend.labels.usePointStyle = true;
     Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
+
+    // Monochrome palette
+    const MONO = {
+      black: '#000000',
+      dark: '#333333',
+      mid: '#777777',
+      light: '#cccccc',
+      lighter: '#e5e5e5',
+      bg: '#f7f7f8',
+    };
 
     // ── Dummy IPK/IPS Data ──
     const dummyIPK = {
@@ -501,19 +558,15 @@
       const user = await initDashboardPage(['mahasiswa']);
       if (!user) return;
 
-      // ── Stagger quick stats ──
+      // ── Stagger reveals ──
       document.querySelectorAll('.quick-stat-card').forEach((card, i) => {
         setTimeout(() => card.classList.add('visible'), 300 + i * 100);
       });
-
-      // ── Stagger chart cards ──
       document.querySelectorAll('.chart-card').forEach((card, i) => {
         setTimeout(() => card.classList.add('visible'), 600 + i * 150);
       });
 
-      // ══════════════════════════════════════════
-      // LOAD DATA
-      // ══════════════════════════════════════════
+      // ══ LOAD DATA ══
       let historyData = null;
       let profileData = null;
 
@@ -535,7 +588,6 @@
       if (historyData) {
         document.getElementById('qs-hadir').textContent = historyData.total_attendance || 0;
         document.getElementById('qs-hadir-sub').textContent = `${historyData.records?.length || 0} record`;
-
         const mkSet = new Set();
         (historyData.records || []).forEach(r => mkSet.add(r.kode_mk));
         document.getElementById('qs-mk').textContent = mkSet.size;
@@ -546,9 +598,7 @@
         document.getElementById('qs-sem-sub').textContent = `Tahun ${profileData.profile?.entry_year || '-'}`;
       }
 
-      // ══════════════════════════════════════════
-      // CHART 1: IPK per Semester (Line)
-      // ══════════════════════════════════════════
+      // ══ CHART 1: IPK (Line) ══
       new Chart(document.getElementById('canvas-ipk'), {
         type: 'line',
         data: {
@@ -556,75 +606,47 @@
           datasets: [{
             label: 'IPK',
             data: dummyIPK.ipk,
-            borderColor: '#4285f4',
-            backgroundColor: 'rgba(66, 133, 244, 0.08)',
+            borderColor: MONO.black,
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
             fill: true,
             tension: 0.4,
-            borderWidth: 2.5,
-            pointBackgroundColor: '#4285f4',
+            borderWidth: 2,
+            pointBackgroundColor: MONO.black,
             pointRadius: 5,
             pointHoverRadius: 8,
           }]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { display: false },
-          },
+          plugins: { legend: { display: false } },
           scales: {
-            y: {
-              min: 2.0, max: 4.0,
-              grid: { color: 'rgba(0,0,0,0.04)' },
-              ticks: { callback: v => v.toFixed(2) },
-            },
+            y: { min: 2.0, max: 4.0, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v.toFixed(2) } },
             x: { grid: { display: false } },
           },
         }
       });
 
-      // ══════════════════════════════════════════
-      // CHART 2: IPS per Semester (Grouped Bar)
-      // ══════════════════════════════════════════
+      // ══ CHART 2: IPS (Grouped Bar) ══
       new Chart(document.getElementById('canvas-ips'), {
         type: 'bar',
         data: {
           labels: dummyIPK.semesters,
           datasets: [
-            {
-              label: 'IPS',
-              data: dummyIPK.ips,
-              backgroundColor: 'rgba(52, 168, 83, 0.7)',
-              borderRadius: 6,
-              barPercentage: 0.5,
-            },
-            {
-              label: 'IPK',
-              data: dummyIPK.ipk,
-              backgroundColor: 'rgba(66, 133, 244, 0.5)',
-              borderRadius: 6,
-              barPercentage: 0.5,
-            },
+            { label: 'IPS', data: dummyIPK.ips, backgroundColor: MONO.black, borderRadius: 6, barPercentage: 0.5 },
+            { label: 'IPK', data: dummyIPK.ipk, backgroundColor: MONO.light, borderRadius: 6, barPercentage: 0.5 },
           ]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-          },
+          plugins: { legend: { position: 'top' } },
           scales: {
-            y: {
-              min: 2.0, max: 4.0,
-              grid: { color: 'rgba(0,0,0,0.04)' },
-              ticks: { callback: v => v.toFixed(1) },
-            },
+            y: { min: 2.0, max: 4.0, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v.toFixed(1) } },
             x: { grid: { display: false } },
           },
         }
       });
 
-      // ══════════════════════════════════════════
-      // CHART 3: Kehadiran per MK (Bar) — REAL DATA
-      // ══════════════════════════════════════════
+      // ══ CHART 3: Kehadiran per MK (Bar) — REAL ══
       const mkCount = {};
       (historyData?.records || []).forEach(r => {
         const key = r.mata_kuliah || r.kode_mk;
@@ -633,9 +655,9 @@
 
       const mkLabels = Object.keys(mkCount);
       const mkValues = Object.values(mkCount);
-      const mkColors = mkLabels.map((_, i) => {
-        const palette = ['#4285f4', '#34a853', '#fbbc04', '#ea4335', '#673ab7', '#00bcd4', '#ff5722'];
-        return palette[i % palette.length];
+      const mkGrays = mkLabels.map((_, i) => {
+        const shade = Math.round(20 + (i * 30));
+        return `rgba(${shade}, ${shade}, ${shade}, 0.75)`;
       });
 
       new Chart(document.getElementById('canvas-kehadiran'), {
@@ -645,7 +667,7 @@
           datasets: [{
             label: 'Kehadiran',
             data: mkValues.length ? mkValues : [0],
-            backgroundColor: mkColors.length ? mkColors.map(c => c + 'cc') : ['#ccc'],
+            backgroundColor: mkGrays.length ? mkGrays : ['#ccc'],
             borderRadius: 8,
             barPercentage: 0.6,
           }]
@@ -655,24 +677,17 @@
           indexAxis: 'y',
           plugins: { legend: { display: false } },
           scales: {
-            x: {
-              grid: { color: 'rgba(0,0,0,0.04)' },
-              ticks: { stepSize: 1 },
-            },
+            x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { stepSize: 1 } },
             y: { grid: { display: false } },
           },
         }
       });
 
-      // ══════════════════════════════════════════
-      // CHART 4: Persentase Kehadiran (Donut/Gauge) — REAL
-      // ══════════════════════════════════════════
+      // ══ CHART 4: Gauge (Donut) — REAL ══
       const totalRecords = historyData?.records?.length || 0;
-      // Estimate total possible sessions (16 per MK * MK count)
       const mkCountNum = Object.keys(mkCount).length || 1;
       const totalPossible = mkCountNum * 16;
       const pct = totalPossible > 0 ? Math.min(100, Math.round((totalRecords / totalPossible) * 100)) : 0;
-      const gaugeColor = pct >= 75 ? '#34a853' : pct >= 50 ? '#fbbc04' : '#ea4335';
 
       document.getElementById('gauge-pct-text').textContent = pct + '%';
 
@@ -682,7 +697,7 @@
           labels: ['Hadir', 'Tidak Hadir'],
           datasets: [{
             data: [pct, 100 - pct],
-            backgroundColor: [gaugeColor, '#f0f0f0'],
+            backgroundColor: [MONO.black, MONO.lighter],
             borderWidth: 0,
             circumference: 270,
             rotation: 225,
@@ -693,32 +708,22 @@
           cutout: '78%',
           plugins: {
             legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => ctx.label + ': ' + ctx.raw + '%'
-              }
-            }
+            tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.raw + '%' } }
           },
         }
       });
 
-      // ══════════════════════════════════════════
-      // CHART 5: Heatmap Absensi (GitHub-style) — REAL
-      // ══════════════════════════════════════════
+      // ══ CHART 5: Heatmap — REAL ══
       renderHeatmap(historyData?.records || []);
 
-      // ══════════════════════════════════════════
-      // CHART 6: Alert < 75% — REAL
-      // ══════════════════════════════════════════
+      // ══ CHART 6: Alerts — REAL ══
       renderAlerts(mkCount);
     });
 
-    // ── Heatmap Renderer ──
     function renderHeatmap(records) {
       const grid = document.getElementById('heatmap-grid');
       const monthsEl = document.getElementById('heatmap-months');
 
-      // Build date count map
       const dateCounts = {};
       records.forEach(r => {
         if (!r.waktu) return;
@@ -727,16 +732,14 @@
         dateCounts[key] = (dateCounts[key] || 0) + 1;
       });
 
-      // Generate 52 weeks × 7 days
       const today = new Date();
       const startDate = new Date(today);
       startDate.setDate(startDate.getDate() - 364);
-      // Align to Sunday
       startDate.setDate(startDate.getDate() - startDate.getDay());
 
       let html = '';
       const currentDate = new Date(startDate);
-      const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
       const monthMarkers = [];
       let lastMonth = -1;
 
@@ -760,7 +763,6 @@
 
       grid.innerHTML = html;
 
-      // Month labels
       let monthHtml = '';
       monthMarkers.forEach(m => {
         monthHtml += `<span style="position:absolute;left:${m.week * 16}px;">${m.month}</span>`;
@@ -770,17 +772,16 @@
       monthsEl.innerHTML = monthHtml;
     }
 
-    // ── Alert Renderer ──
     function renderAlerts(mkCount) {
       const alertList = document.getElementById('alert-list');
       const entries = Object.entries(mkCount);
 
       if (entries.length === 0) {
-        alertList.innerHTML = '<div class="text-muted text-sm" style="padding: var(--space-lg); text-align: center;">Belum ada data kehadiran untuk ditampilkan.</div>';
+        alertList.innerHTML = '<div class="text-muted text-sm" style="padding: var(--space-lg); text-align: center;">Belum ada data kehadiran.</div>';
         return;
       }
 
-      const totalPerMK = 16; // Standard 16 meetings per course
+      const totalPerMK = 16;
       let html = '';
 
       entries.forEach(([mk, count]) => {
@@ -801,8 +802,8 @@
         const badge = pct < 75
           ? '<span class="badge badge-danger">Bahaya</span>'
           : pct < 90
-          ? '<span class="badge badge-warning">Perhatikan</span>'
-          : '<span class="badge badge-success">Aman</span>';
+            ? '<span class="badge badge-warning">Perhatikan</span>'
+            : '<span class="badge badge-success">Aman</span>';
 
         html += `
           <div class="alert-item ${alertClass}">
@@ -825,4 +826,5 @@
     }
   </script>
 </body>
+
 </html>

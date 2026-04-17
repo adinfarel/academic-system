@@ -72,7 +72,7 @@ class User(Base):
     # Status
     is_active = Column(Boolean, default=True)
     
-    # Approval
+    # Approval (INI BARU)
     registration_status = Column(
         Enum(RegistrationStatus),
         nullable=False,

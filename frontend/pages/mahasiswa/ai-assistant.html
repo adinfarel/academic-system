@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,21 +20,25 @@
       text-align: center;
       gap: var(--space-md);
     }
+
     .chat-welcome .welcome-icon {
       font-size: 3rem;
       font-family: var(--font-primary);
       opacity: 0.3;
       margin-bottom: var(--space-md);
     }
+
     .chat-welcome h3 {
       font-size: var(--text-xl);
       font-weight: 600;
     }
+
     .chat-welcome p {
       font-size: var(--text-sm);
       color: var(--fg-muted);
       max-width: 400px;
     }
+
     .intent-badge {
       display: inline-flex;
       align-items: center;
@@ -43,23 +48,28 @@
       border-radius: var(--radius-full);
       font-family: var(--font-primary);
     }
+
     .intent-database {
       background: rgba(59, 130, 246, 0.15);
       color: var(--info);
     }
+
     .intent-rag {
       background: rgba(34, 197, 94, 0.15);
       color: var(--success);
     }
+
     .sources-list {
       margin-top: var(--space-sm);
       padding-top: var(--space-sm);
       border-top: 1px solid var(--border-color);
     }
+
     .sources-list span {
       font-size: var(--text-xs);
       color: var(--fg-muted);
     }
+
     .source-tag {
       display: inline-block;
       padding: 2px 6px;
@@ -71,15 +81,18 @@
       color: var(--fg-secondary);
       font-family: var(--font-primary);
     }
+
     .chat-input-bar button {
       min-width: 44px;
     }
+
     .ai-answer-text {
       white-space: pre-wrap;
       word-break: break-word;
     }
   </style>
 </head>
+
 <body>
   <div class="dashboard-layout">
     <!-- Mobile Toggle -->
@@ -114,7 +127,8 @@
             <div class="sidebar-user-role">mahasiswa</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()"
+          style="justify-content: flex-start; gap: var(--space-md);">
           <span>✕</span> Keluar
         </button>
       </div>
@@ -152,13 +166,8 @@
 
         <!-- Input Bar -->
         <div class="chat-input-bar">
-          <input
-            type="text"
-            id="chat-input"
-            class="form-input"
-            placeholder="Ketik pertanyaan Anda..."
-            autocomplete="off"
-          >
+          <input type="text" id="chat-input" class="form-input" placeholder="Ketik pertanyaan Anda..."
+            autocomplete="off">
           <button class="btn btn-primary" id="btn-send" title="Kirim">
             ↑
           </button>
@@ -220,7 +229,7 @@
 
         try {
           const data = await apiPost('/api/v1/agent/ask', { question });
-          
+
           // Remove typing
           typingEl.remove();
 
@@ -281,4 +290,5 @@
     });
   </script>
 </body>
+
 </html>

@@ -152,6 +152,7 @@ async function apiLogin(username, password) {
   setCachedUser({
     username: data.username,
     role: data.role,
+    must_change_password: data.must_change_password || false,
   });
 
   return data;

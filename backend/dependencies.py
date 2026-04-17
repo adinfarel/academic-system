@@ -11,7 +11,7 @@ How to use:
 """
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2AuthorizationCodeBearer
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -19,7 +19,7 @@ from backend.services.auth import decode_access_token, get_user_by_id
 from backend.models.user import User, UserRole
 
 # ENDPOINT LOGIN
-oauth2_scheme = OAuth2AuthorizationCodeBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -88,7 +88,7 @@ def get_current_activate_admin(
     
     return current_user
 
-def get_current_activate_admin(
+def get_current_activate_lecturer(
     current_user: User = Depends(get_current_user)
 ) -> User:
     """Dependency specific endpoint for lecturer."""
@@ -107,7 +107,7 @@ def get_current_active_mahasiswa(
     if current_user.role not in [UserRole.MAHASISWA, UserRole.ADMIN]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied — only mahasiswa or admin"
+            detail="Access denied — Only mahasiswa or admin"
         )
         
     return current_user

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     .greeting {
       padding: var(--space-2xl) var(--space-xl) var(--space-xl);
     }
+
     .greeting-hello {
       font-size: var(--text-sm);
       color: var(--fg-muted);
@@ -21,6 +23,7 @@
       opacity: 0;
       animation: revealUp 0.6s ease 0.3s forwards;
     }
+
     .greeting-name {
       font-size: clamp(1.8rem, 4vw, var(--text-4xl));
       font-weight: 400;
@@ -39,26 +42,37 @@
       transform: translateY(30px);
       transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .section-panel.visible {
       opacity: 1;
       transform: translateY(0);
     }
+
     .section-panel:hover {
       border-color: var(--border-hover);
     }
+
     .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: var(--space-lg);
     }
+
     .panel-header-left {
       display: flex;
       align-items: center;
       gap: var(--space-sm);
     }
-    .panel-header h3 { font-size: var(--text-xl); }
-    .panel-header .icon { opacity: 0.4; font-size: var(--text-xl); }
+
+    .panel-header h3 {
+      font-size: var(--text-xl);
+    }
+
+    .panel-header .icon {
+      opacity: 0.4;
+      font-size: var(--text-xl);
+    }
 
     .toolbar {
       display: flex;
@@ -68,13 +82,16 @@
       flex-wrap: wrap;
       gap: var(--space-md);
     }
+
     .toolbar-search {
       position: relative;
     }
+
     .toolbar-search input {
       width: 260px;
       padding-left: 2.25rem;
     }
+
     .toolbar-search .search-icon {
       position: absolute;
       left: 0.75rem;
@@ -91,6 +108,7 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
+
     .table tbody tr:hover td {
       background: var(--bg-card-hover);
     }
@@ -101,6 +119,7 @@
       gap: var(--space-md);
       margin-bottom: var(--space-xl);
     }
+
     .rag-stat {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
@@ -108,10 +127,12 @@
       padding: var(--space-lg);
       transition: all 0.3s ease;
     }
+
     .rag-stat:hover {
       border-color: var(--border-hover);
       transform: translateY(-2px);
     }
+
     .rag-stat .rag-label {
       font-size: var(--text-xs);
       color: var(--fg-muted);
@@ -119,6 +140,7 @@
       letter-spacing: 0.08em;
       margin-bottom: var(--space-sm);
     }
+
     .rag-stat .rag-value {
       font-size: var(--text-xl);
       font-weight: 400;
@@ -129,9 +151,13 @@
       grid-template-columns: 1fr 1fr;
       gap: var(--space-md);
     }
+
     @media (max-width: 480px) {
-      .modal-form-grid { grid-template-columns: 1fr; }
+      .modal-form-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     .detail-row {
       display: flex;
       justify-content: space-between;
@@ -140,10 +166,95 @@
       border-bottom: 1px solid var(--border-color);
       transition: padding 0.2s ease;
     }
-    .detail-row:last-child { border-bottom: none; }
-    .detail-row:hover { padding-left: var(--space-sm); }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-row:hover {
+      padding-left: var(--space-sm);
+    }
+
+    /* ── Pending Registration Panel ── */
+    .pending-count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full);
+      background: var(--danger);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .pending-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-sm);
+      transition: all var(--transition-fast);
+      animation: fadeInUp 0.4s ease;
+    }
+
+    .pending-row:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+    }
+
+    .pending-info h4 {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .pending-info p {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+    }
+
+    .pending-academic {
+      font-size: var(--text-xs);
+      color: var(--fg-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      justify-content: center;
+    }
+
+    .pending-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .pending-empty {
+      text-align: center;
+      padding: var(--space-2xl);
+      color: var(--fg-muted);
+    }
+
+    .pending-empty .empty-check {
+      font-size: var(--text-4xl);
+      opacity: 0.2;
+      margin-bottom: var(--space-md);
+    }
+
+    @media (max-width: 640px) {
+      .pending-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="dashboard-layout">
     <button class="sidebar-toggle">☰</button>
@@ -167,7 +278,8 @@
             <div class="sidebar-user-role">admin</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()"
+          style="justify-content: flex-start; gap: var(--space-md);">
           <span>✕</span> Keluar
         </button>
       </div>
@@ -180,10 +292,25 @@
         <h1 class="greeting-name" id="greeting-name">—</h1>
       </div>
 
+      <!-- ══ PENDING REGISTRATIONS ══ -->
+      <div class="section-panel" id="panel-pending">
+        <div class="panel-header">
+          <div class="panel-header-left"><span class="icon">⏳</span>
+            <h3>Pendaftaran Menunggu</h3>
+          </div>
+          <span id="pending-count-badge"></span>
+        </div>
+        <div id="pending-list">
+          <div class="text-muted text-sm" style="padding:var(--space-xl);text-align:center;">Memuat pendaftaran...</div>
+        </div>
+      </div>
+
       <!-- ══ STUDENTS ══ -->
       <div class="section-panel" id="panel-students">
         <div class="panel-header">
-          <div class="panel-header-left"><span class="icon">{ }</span><h3>Manajemen Mahasiswa</h3></div>
+          <div class="panel-header-left"><span class="icon">{ }</span>
+            <h3>Manajemen Mahasiswa</h3>
+          </div>
           <span class="text-xs text-muted" id="student-count">—</span>
         </div>
 
@@ -196,11 +323,20 @@
 
         <div class="table-wrapper">
           <table class="table">
-            <thead><tr>
-              <th>NIM</th><th>Nama</th><th>Program Studi</th><th>Semester</th><th>UKT</th><th>Status</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th>NIM</th>
+                <th>Nama</th>
+                <th>Program Studi</th>
+                <th>Semester</th>
+                <th>UKT</th>
+                <th>Status</th>
+              </tr>
+            </thead>
             <tbody id="student-body">
-              <tr><td colspan="6" class="text-center text-muted" style="padding:var(--space-xl);">Memuat...</td></tr>
+              <tr>
+                <td colspan="6" class="text-center text-muted" style="padding:var(--space-xl);">Memuat...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -210,15 +346,25 @@
       <!-- ══ LECTURERS ══ -->
       <div class="section-panel" id="panel-lecturers">
         <div class="panel-header">
-          <div class="panel-header-left"><span class="icon">◎</span><h3>Data Dosen</h3></div>
+          <div class="panel-header-left"><span class="icon">◎</span>
+            <h3>Data Dosen</h3>
+          </div>
         </div>
         <div class="table-wrapper">
           <table class="table">
-            <thead><tr>
-              <th>NIDN</th><th>Nama</th><th>Program Studi</th><th>Jabatan</th><th>Status</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th>NIDN</th>
+                <th>Nama</th>
+                <th>Program Studi</th>
+                <th>Jabatan</th>
+                <th>Status</th>
+              </tr>
+            </thead>
             <tbody id="lecturer-body">
-              <tr><td colspan="5" class="text-center text-muted" style="padding:var(--space-xl);">Memuat...</td></tr>
+              <tr>
+                <td colspan="5" class="text-center text-muted" style="padding:var(--space-xl);">Memuat...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -227,13 +373,24 @@
       <!-- ══ RAG INDEXER ══ -->
       <div class="section-panel" id="panel-rag">
         <div class="panel-header">
-          <div class="panel-header-left"><span class="icon">◈</span><h3>RAG Knowledge Base</h3></div>
+          <div class="panel-header-left"><span class="icon">◈</span>
+            <h3>RAG Knowledge Base</h3>
+          </div>
         </div>
 
         <div class="rag-stats" id="rag-stats">
-          <div class="rag-stat"><div class="rag-label">Status</div><div class="rag-value" id="rag-status">—</div></div>
-          <div class="rag-stat"><div class="rag-label">Total Chunks</div><div class="rag-value" id="rag-chunks">—</div></div>
-          <div class="rag-stat"><div class="rag-label">Pesan</div><div class="rag-value" id="rag-msg" style="font-size:var(--text-sm);">—</div></div>
+          <div class="rag-stat">
+            <div class="rag-label">Status</div>
+            <div class="rag-value" id="rag-status">—</div>
+          </div>
+          <div class="rag-stat">
+            <div class="rag-label">Total Chunks</div>
+            <div class="rag-value" id="rag-chunks">—</div>
+          </div>
+          <div class="rag-stat">
+            <div class="rag-label">Pesan</div>
+            <div class="rag-value" id="rag-msg" style="font-size:var(--text-sm);">—</div>
+          </div>
         </div>
 
         <div style="display:flex;gap:var(--space-md);">
@@ -252,7 +409,9 @@
         <h3 id="modal-student-title">Detail</h3>
         <button class="modal-close" onclick="closeStudentModal()">✕</button>
       </div>
-      <div id="modal-student-body"><div class="spinner" style="margin:var(--space-xl) auto;"></div></div>
+      <div id="modal-student-body">
+        <div class="spinner" style="margin:var(--space-xl) auto;"></div>
+      </div>
       <div id="modal-student-actions" style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);"></div>
     </div>
   </div>
@@ -266,20 +425,54 @@
       </div>
       <form id="edit-student-form">
         <div class="modal-form-grid">
-          <div class="form-group"><label class="form-label">NIM</label><input type="text" id="edit-nim" class="form-input" disabled></div>
-          <div class="form-group"><label class="form-label">Nama</label><input type="text" id="edit-fullname" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Program Studi</label><input type="text" id="edit-prodi" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Jurusan</label><input type="text" id="edit-jurusan" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Semester</label><input type="number" id="edit-semester" class="form-input" min="1" max="14"></div>
-          <div class="form-group"><label class="form-label">Tahun Masuk</label><input type="number" id="edit-entry-year" class="form-input" min="2000" max="2030"></div>
-          <div class="form-group"><label class="form-label">Status UKT</label><select id="edit-ukt" class="form-input form-select"><option value="true">Lunas</option><option value="false">Belum Lunas</option></select></div>
-          <div class="form-group"><label class="form-label">Status Aktif</label><select id="edit-active" class="form-input form-select"><option value="true">Aktif</option><option value="false">Non-Aktif</option></select></div>
+          <div class="form-group"><label class="form-label">NIM</label><input type="text" id="edit-nim"
+              class="form-input" disabled></div>
+          <div class="form-group"><label class="form-label">Nama</label><input type="text" id="edit-fullname"
+              class="form-input"></div>
+          <div class="form-group"><label class="form-label">Program Studi</label><input type="text" id="edit-prodi"
+              class="form-input"></div>
+          <div class="form-group"><label class="form-label">Jurusan</label><input type="text" id="edit-jurusan"
+              class="form-input"></div>
+          <div class="form-group"><label class="form-label">Semester</label><input type="number" id="edit-semester"
+              class="form-input" min="1" max="14"></div>
+          <div class="form-group"><label class="form-label">Tahun Masuk</label><input type="number" id="edit-entry-year"
+              class="form-input" min="2000" max="2030"></div>
+          <div class="form-group"><label class="form-label">Status UKT</label><select id="edit-ukt"
+              class="form-input form-select">
+              <option value="true">Lunas</option>
+              <option value="false">Belum Lunas</option>
+            </select></div>
+          <div class="form-group"><label class="form-label">Status Aktif</label><select id="edit-active"
+              class="form-input form-select">
+              <option value="true">Aktif</option>
+              <option value="false">Non-Aktif</option>
+            </select></div>
         </div>
         <div style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);">
           <button type="submit" class="btn btn-primary" id="btn-save-edit">Simpan</button>
           <button type="button" class="btn" onclick="closeEditModal()">Batal</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ══ REJECT MODAL ══ -->
+  <div class="modal-overlay" id="modal-reject">
+    <div class="modal" style="max-width:440px;">
+      <div class="modal-header">
+        <h3>Tolak Pendaftaran</h3>
+        <button class="modal-close" onclick="closeRejectModal()">✕</button>
+      </div>
+      <p class="text-sm text-secondary mb-lg" id="reject-modal-info">Apakah Anda yakin ingin menolak pendaftaran ini?
+      </p>
+      <div class="form-group">
+        <label class="form-label" for="reject-reason">Alasan Penolakan (opsional)</label>
+        <textarea id="reject-reason" class="form-input" rows="3" placeholder="Berikan alasan penolakan..."></textarea>
+      </div>
+      <div style="display:flex;gap:var(--space-md);margin-top:var(--space-lg);">
+        <button class="btn btn-danger" id="btn-confirm-reject">Tolak Pendaftaran</button>
+        <button class="btn" onclick="closeRejectModal()">Batal</button>
+      </div>
     </div>
   </div>
 
@@ -291,17 +484,101 @@
     let studentSkip = 0;
     const studentLimit = 10;
     let currentEditNim = null;
+    let rejectTarget = null;
 
     function openStudentModal() { document.getElementById('modal-student').classList.add('active'); }
     function closeStudentModal() { document.getElementById('modal-student').classList.remove('active'); }
     function openEditModal() { document.getElementById('modal-edit').classList.add('active'); }
     function closeEditModal() { document.getElementById('modal-edit').classList.remove('active'); }
+    function openRejectModal() { document.getElementById('modal-reject').classList.add('active'); }
+    function closeRejectModal() { document.getElementById('modal-reject').classList.remove('active'); rejectTarget = null; }
 
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await initDashboardPage(['admin']);
       if (!user) return;
 
       document.getElementById('greeting-name').textContent = user.username;
+
+      // ══ PENDING REGISTRATIONS ══
+      async function loadPending() {
+        try {
+          const data = await apiGet('/api/v1/auth/pending');
+          const list = document.getElementById('pending-list');
+          const badge = document.getElementById('pending-count-badge');
+
+          if (!data.pending || data.pending.length === 0) {
+            list.innerHTML = `<div class="pending-empty"><div class="empty-check">✓</div><p class="text-sm">Tidak ada pendaftaran yang menunggu</p></div>`;
+            badge.innerHTML = '';
+            return;
+          }
+
+          badge.innerHTML = `<span class="pending-count-badge">${data.total}</span>`;
+
+          list.innerHTML = data.pending.map((p, i) => {
+            const mhs = p.mahasiswa || {};
+            const regTime = p.registered_at ? formatDateTime(p.registered_at) : '-';
+            return `
+              <div class="pending-row" style="animation-delay:${i * 0.05}s">
+                <div class="pending-info">
+                  <h4>${escapeHtml(mhs.full_name || p.username)}</h4>
+                  <p>${escapeHtml(p.email)} · ${regTime}</p>
+                </div>
+                <div class="pending-academic">
+                  <span>NIM: ${escapeHtml(mhs.nim || '-')}</span>
+                  <span>${escapeHtml(mhs.study_program || '-')} · Sem ${mhs.semester || '-'}</span>
+                </div>
+                <div class="pending-actions">
+                  <button class="btn btn-sm btn-primary" onclick="approveRegistration(${p.user_id}, '${escapeHtml(mhs.full_name || p.username)}')">Approve</button>
+                  <button class="btn btn-sm btn-danger" onclick="startReject(${p.user_id}, '${escapeHtml(mhs.full_name || p.username)}')">Reject</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } catch (error) {
+          document.getElementById('pending-list').innerHTML = `<div class="text-muted text-sm" style="padding:var(--space-xl);text-align:center;">Gagal memuat: ${escapeHtml(error.message)}</div>`;
+        }
+      }
+
+      window.approveRegistration = async (userId, name) => {
+        if (!confirm(`Approve pendaftaran ${name}? Kode akses akan dikirim ke email mahasiswa.`)) return;
+        try {
+          const result = await apiPost(`/api/v1/auth/approve/${userId}`, {});
+          showToast(result.message || `${name} berhasil di-approve!`, 'success');
+          if (result.verification_code) {
+            showToast(`Kode verifikasi: ${result.verification_code}`, 'info');
+          }
+          loadPending();
+          loadStudents(studentSkip);
+        } catch (error) {
+          showToast(error.message, 'error');
+        }
+      };
+
+      window.startReject = (userId, name) => {
+        rejectTarget = userId;
+        document.getElementById('reject-modal-info').textContent = `Tolak pendaftaran ${name}?`;
+        document.getElementById('reject-reason').value = '';
+        openRejectModal();
+      };
+
+      document.getElementById('btn-confirm-reject').addEventListener('click', async () => {
+        if (!rejectTarget) return;
+        const btn = document.getElementById('btn-confirm-reject');
+        btn.disabled = true; btn.textContent = 'Memproses...';
+        try {
+          const reason = document.getElementById('reject-reason').value.trim() || null;
+          const result = await apiPost(`/api/v1/auth/reject/${rejectTarget}`, { reason });
+          showToast(result.message || 'Pendaftaran ditolak.', 'success');
+          closeRejectModal();
+          loadPending();
+        } catch (error) {
+          showToast(error.message, 'error');
+        } finally {
+          btn.disabled = false; btn.textContent = 'Tolak Pendaftaran';
+        }
+      });
+
+      loadPending();
 
       // Stagger panel reveals
       document.querySelectorAll('.section-panel').forEach((p, i) => {
@@ -353,7 +630,7 @@
             ['Jurusan', s.major || '-'], ['Semester', s.semester], ['Tahun Masuk', s.entry_year],
             ['UKT', s.status_ukt ? '<span class="badge badge-success">Lunas</span>' : '<span class="badge badge-danger">Belum</span>'],
             ['Status', s.activate_status ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-danger">Non-Aktif</span>'],
-          ].map(([l, v], i) => `<div class="detail-row" style="animation:revealUp 0.3s ease ${i*0.05}s both"><span class="text-muted text-sm">${l}</span><span class="text-sm">${v}</span></div>`).join('');
+          ].map(([l, v], i) => `<div class="detail-row" style="animation:revealUp 0.3s ease ${i * 0.05}s both"><span class="text-muted text-sm">${l}</span><span class="text-sm">${v}</span></div>`).join('');
           document.getElementById('modal-student-actions').innerHTML = `
             <button class="btn btn-primary btn-sm" onclick="editStudent('${escapeHtml(s.nim)}')">Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteStudent('${escapeHtml(s.nim)}')">Hapus</button>
@@ -462,4 +739,5 @@
     });
   </script>
 </body>
+
 </html>

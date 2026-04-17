@@ -537,21 +537,21 @@
 
   <!-- ═══ NAVBAR with pills like Google reference ═══ -->
   <nav class="navbar" id="navbar">
-    <a href="#hero" class="navbar-brand">Adin Good Game >.<</a>
-    <div class="navbar-center">
-      <a class="navbar-link" onclick="goTo('roles')">Akses</a>
-      <a class="navbar-link" onclick="goTo('features')">Fitur</a>
-      <a class="navbar-link" onclick="goTo('docs')">Docs</a>
-    </div>
-    <!-- Pills like Google Professional/Frontend/Fullstack -->
-    <div class="navbar-pills">
-      <a href="login.html?role=mahasiswa" class="navbar-pill">
-        <span class="pill-icon">⬡</span> Mahasiswa
-      </a>
-      <a href="login.html?role=dosen" class="navbar-pill">
-        <span class="pill-icon">◎</span> Dosen
-      </a>
-    </div>
+    <a href="#hero" class="navbar-brand">Adin Good Game >.<
+        <div class="navbar-center">
+          <a class="navbar-link" onclick="goTo('roles')">Akses</a>
+          <a class="navbar-link" onclick="goTo('features')">Fitur</a>
+          <a class="navbar-link" onclick="goTo('docs')">Docs</a>
+        </div>
+        <!-- Pills like Google Professional/Frontend/Fullstack -->
+        <div class="navbar-pills">
+          <a href="login.html?role=mahasiswa" class="navbar-pill">
+            <span class="pill-icon">⬡</span> Mahasiswa
+          </a>
+          <a href="login.html?role=dosen" class="navbar-pill">
+            <span class="pill-icon">◎</span> Dosen
+          </a>
+        </div>
   </nav>
 
   <!-- ═══ 1. HERO ═══ -->
@@ -672,10 +672,10 @@
           <p>Dibangun dengan FastAPI, ArcFace, dan teknologi NLP terkini — dirancang mendigitalisasi proses akademik
             secara menyeluruh dengan fokus pada keamanan, kecepatan, dan kemudahan penggunaan.</p>
           <div style="display:flex; gap:var(--space-sm); flex-wrap:wrap; margin: var(--space-lg) 0;">
-            <a href="https://www.polsri.ac.id" target="_blank" class="btn btn-sm">🌐 Website Polsri</a>
-            <a href="https://www.instagram.com/polsri_official/" target="_blank" class="btn btn-sm">📸 Instagram
+            <a href="https://www.polsri.ac.id" target="_blank" class="btn btn-sm">Website Polsri</a>
+            <a href="https://www.instagram.com/polsri_official/" target="_blank" class="btn btn-sm">Instagram
               Polsri</a>
-            <a href="https://maps.app.goo.gl/1ucZ8hzvk6rn5vR67" target="_blank" class="btn btn-sm">📍 Lokasi Kampus</a>
+            <a href="https://maps.app.goo.gl/1ucZ8hzvk6rn5vR67" target="_blank" class="btn btn-sm">Lokasi Kampus</a>
           </div>
           <a href="#roles" class="btn btn-primary" onclick="goTo('roles')">Mulai Sekarang →</a>
         </div>
@@ -826,7 +826,7 @@
           }
         },
         {
-          id: 'features', target: 'feat-type', cursor: 'feat-cursor', text: 'Apa yang membuat ini berbeda', extra: () => {
+          id: 'features', target: 'feat-type', cursor: 'feat-cursor', text: 'Apa yang membuat ini berbeda?', extra: () => {
             document.querySelectorAll('.feature-card').forEach(c => c.classList.add('show'));
           }
         },

@@ -1,0 +1,13 @@
+kode_mk,nama_mk,sks,semester,prodi,jurusan,prasyarat,deskripsi,ruangan
+MATEK01,Matematika Ekonomi,2,4,Manajemen Informatika,Teknik Komputer,,Penerapan konsep matematika dalam analisis ekonomi dan bisnis,Gedung Bahasa Inggris Lantai 3 - Teori 1
+BD2-01,Basis Data II,1,4,Manajemen Informatika,Teknik Komputer,Basis Data I,Perancangan dan implementasi basis data lanjutan termasuk normalisasi dan indexing,Gedung Manajemen Informatika Lantai 3 - Lab 1
+PBD2-01,Praktikum Basis Data II,1,4,Manajemen Informatika,Teknik Komputer,Basis Data I,Praktikum implementasi basis data menggunakan SQL dan DBMS,Gedung Manajemen Informatika Lantai 3 - Lab 1
+SIM-01,Sistem Informasi Manajemen,3,4,Manajemen Informatika,Teknik Komputer,,Konsep dan implementasi sistem informasi dalam organisasi dan manajemen,Gedung Bahasa Inggris Lantai 3 - Teori 1
+APBO-01,Analisis Dan Perancangan Berorientasi Objek,3,4,Manajemen Informatika,Teknik Komputer,Pemrograman Berorientasi Objek,Metodologi analisis dan perancangan sistem dengan pendekatan berorientasi objek (UML),Gedung Bahasa Inggris Lantai 3 - Teori 1
+KWU-01,Kewirausahaan,3,4,Manajemen Informatika,Teknik Komputer,,Pengembangan jiwa kewirausahaan dan pembuatan business plan,Gedung Bahasa Inggris Lantai 3 - Teori 1
+PWEB-01,Praktikum Desain dan Pemrograman Web,1,4,Manajemen Informatika,Teknik Komputer,Pemrograman Web,"Praktikum pembuatan website responsive dengan HTML, CSS, JavaScript, dan framework",Gedung Manajemen Informatika Lantai 3 - Teori 1
+PKN-01,Pendidikan Kewarganegaraan,2,4,Manajemen Informatika,Teknik Komputer,,"Pendidikan bela negara, wawasan kebangsaan, dan hak kewajiban warga negara",Gedung Manajemen Informatika Lantai 3 - Teori 1
+AKT-01,Akuntansi,2,4,Manajemen Informatika,Teknik Komputer,,Dasar-dasar akuntansi keuangan dan siklus akuntansi perusahaan jasa dan dagang,Gedung Bahasa Inggris Lantai 3 - Teori 4
+SIG-01,Sistem Informasi Geografis,1,4,Manajemen Informatika,Teknik Komputer,,Konsep dan aplikasi SIG untuk pemetaan dan analisis spasial,Gedung Manajemen Informatika Lantai 3 - Teori 4
+PAKT-01,Praktikum Akuntansi,1,4,Manajemen Informatika,Teknik Komputer,Akuntansi,Praktikum pencatatan transaksi keuangan menggunakan software akuntansi,Gedung Manajemen Informatika Lantai 3 - Lab 2
+PSIG-01,Praktikum Sistem Informasi Geografis,1,4,Manajemen Informatika,Teknik Komputer,Sistem Informasi Geografis,Praktikum pembuatan peta digital dan analisis spasial menggunakan software SIG,Gedung Manajemen Informatika Lantai 3 - Lab 10

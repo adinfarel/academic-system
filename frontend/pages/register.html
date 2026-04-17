@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +16,15 @@
       grid-template-columns: 1fr 1.2fr;
       min-height: 100vh;
     }
+
     @media (max-width: 900px) {
-      .register-layout { grid-template-columns: 1fr; }
-      .register-visual { display: none; }
+      .register-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .register-visual {
+        display: none;
+      }
     }
 
     /* Left: particle visual */
@@ -30,16 +37,21 @@
       justify-content: center;
       border-right: 1px solid var(--border-color);
     }
+
     .register-visual canvas {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
+
     .register-visual .visual-text {
       position: relative;
       z-index: 2;
       text-align: center;
     }
+
     .register-visual .visual-brand {
       font-size: var(--text-xs);
       color: var(--fg-muted);
@@ -56,11 +68,13 @@
       position: relative;
       overflow-y: auto;
     }
+
     .register-form-box {
       width: 100%;
       max-width: 480px;
       padding: var(--space-xl) 0;
     }
+
     .reg-type-title {
       font-size: var(--text-3xl);
       font-weight: 600;
@@ -68,6 +82,7 @@
       margin-bottom: var(--space-xs);
       min-height: 1.2em;
     }
+
     .reg-type-cursor {
       display: inline-block;
       width: 4px;
@@ -77,7 +92,12 @@
       border-radius: 2px;
       animation: blink 0.75s step-end infinite, cursorColor 2s linear infinite;
     }
-    .reg-type-cursor.done { animation: none; background: transparent; }
+
+    .reg-type-cursor.done {
+      animation: none;
+      background: transparent;
+    }
+
     .reg-subtitle {
       font-size: var(--text-sm);
       color: var(--fg-muted);
@@ -85,7 +105,11 @@
       opacity: 0;
       transition: opacity 0.5s ease;
     }
-    .reg-subtitle.show { opacity: 1; }
+
+    .reg-subtitle.show {
+      opacity: 1;
+    }
+
     .reg-back {
       position: absolute;
       top: var(--space-lg);
@@ -95,24 +119,35 @@
       text-decoration: none;
       transition: color 0.2s;
     }
-    .reg-back:hover { color: var(--fg-primary); opacity: 1; }
+
+    .reg-back:hover {
+      color: var(--fg-primary);
+      opacity: 1;
+    }
+
     .register-form-area {
       opacity: 0;
       transform: translateY(15px);
       transition: all 0.5s ease;
     }
+
     .register-form-area.show {
       opacity: 1;
       transform: translateY(0);
     }
+
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--space-md);
     }
+
     @media (max-width: 480px) {
-      .form-row { grid-template-columns: 1fr; }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
     }
+
     /* Tabs */
     .reg-tabs {
       display: flex;
@@ -123,6 +158,7 @@
       margin-bottom: var(--space-xl);
       border: 1px solid var(--border-color);
     }
+
     .reg-tab {
       flex: 1;
       padding: 0.625rem;
@@ -136,19 +172,28 @@
       background: transparent;
       text-align: center;
     }
-    .reg-tab:hover { color: var(--fg-primary); }
+
+    .reg-tab:hover {
+      color: var(--fg-primary);
+    }
+
     .reg-tab.active {
       background: var(--fg-primary);
       color: #fff;
     }
-    .tab-content { display: none; }
+
+    .tab-content {
+      display: none;
+    }
+
     .tab-content.active {
       display: block;
       animation: fadeIn 0.3s ease;
     }
+
     .register-error {
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.2);
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
       border-radius: var(--radius-md);
       padding: var(--space-md);
       font-size: var(--text-sm);
@@ -156,16 +201,21 @@
       margin-bottom: var(--space-lg);
       display: none;
     }
+
     .register-error.show {
       display: block;
       animation: shake 0.4s ease;
     }
+
     .register-footer {
       margin-top: var(--space-xl);
       opacity: 0;
       transition: opacity 0.5s ease;
     }
-    .register-footer.show { opacity: 1; }
+
+    .register-footer.show {
+      opacity: 1;
+    }
 
     /* ── Token Verification Info Box ── */
     .token-info-box {
@@ -180,23 +230,40 @@
       transform: translateY(10px);
       animation: tokenReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
     }
+
     @keyframes tokenReveal {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .token-info-box::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 3px;
       background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04, #ea4335);
       background-size: 300% 100%;
       animation: gradientShift 3s ease infinite;
     }
+
     @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
     }
+
     .token-info-title {
       font-size: var(--text-sm);
       font-weight: 600;
@@ -206,6 +273,7 @@
       align-items: center;
       gap: var(--space-sm);
     }
+
     .token-info-title .shield-icon {
       display: inline-flex;
       align-items: center;
@@ -217,15 +285,27 @@
       font-size: 14px;
       animation: shieldPulse 2s ease-in-out infinite;
     }
+
     @keyframes shieldPulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.2); }
-      50% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(66, 133, 244, 0); }
+
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.2);
+      }
+
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 6px rgba(66, 133, 244, 0);
+      }
     }
+
     .token-steps {
       display: flex;
       flex-direction: column;
       gap: var(--space-sm);
     }
+
     .token-step {
       display: flex;
       align-items: flex-start;
@@ -236,12 +316,18 @@
       opacity: 0;
       transform: translateX(-10px);
     }
+
     .token-step.visible {
       animation: stepSlideIn 0.4s ease forwards;
     }
+
     @keyframes stepSlideIn {
-      to { opacity: 1; transform: translateX(0); }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
+
     .token-step-num {
       flex-shrink: 0;
       width: 20px;
@@ -262,14 +348,20 @@
       opacity: 0;
       transform: translateY(8px);
     }
+
     .form-group.field-visible {
       animation: fieldReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+
     @keyframes fieldReveal {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+
 <body>
 
   <div class="register-layout">
@@ -330,22 +422,32 @@
 
             <form id="register-form-mahasiswa" autocomplete="off">
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="mhs-email">Email</label><input type="email" id="mhs-email" class="form-input" placeholder="email@student.polsri.ac.id" required></div>
-                <div class="form-group"><label class="form-label" for="mhs-username">Username</label><input type="text" id="mhs-username" class="form-input" placeholder="adinfarel" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-email">Email</label><input type="email"
+                    id="mhs-email" class="form-input" placeholder="email@student.polsri.ac.id" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-username">Username</label><input type="text"
+                    id="mhs-username" class="form-input" placeholder="adinfarel" required></div>
               </div>
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="mhs-nim">NIM</label><input type="text" id="mhs-nim" class="form-input" placeholder="061240300XX" required></div>
-                <div class="form-group"><label class="form-label" for="mhs-fullname">Nama Lengkap</label><input type="text" id="mhs-fullname" class="form-input" placeholder="Nama lengkap" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-nim">NIM</label><input type="text"
+                    id="mhs-nim" class="form-input" placeholder="061240300XX" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-fullname">Nama Lengkap</label><input
+                    type="text" id="mhs-fullname" class="form-input" placeholder="Nama lengkap" required></div>
               </div>
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="mhs-prodi">Program Studi</label><input type="text" id="mhs-prodi" class="form-input" placeholder="Teknik Informatika" required></div>
-                <div class="form-group"><label class="form-label" for="mhs-jurusan">Jurusan</label><input type="text" id="mhs-jurusan" class="form-input" placeholder="Teknik Komputer" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-prodi">Program Studi</label><input
+                    type="text" id="mhs-prodi" class="form-input" placeholder="Teknik Informatika" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-jurusan">Jurusan</label><input type="text"
+                    id="mhs-jurusan" class="form-input" placeholder="Teknik Komputer" required></div>
               </div>
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="mhs-semester">Semester</label><input type="number" id="mhs-semester" class="form-input" placeholder="4" min="1" max="14" required></div>
-                <div class="form-group"><label class="form-label" for="mhs-entry-year">Tahun Masuk</label><input type="number" id="mhs-entry-year" class="form-input" placeholder="2024" min="2000" max="2030" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-semester">Semester</label><input
+                    type="number" id="mhs-semester" class="form-input" placeholder="4" min="1" max="14" required></div>
+                <div class="form-group"><label class="form-label" for="mhs-entry-year">Tahun Masuk</label><input
+                    type="number" id="mhs-entry-year" class="form-input" placeholder="2024" min="2000" max="2030"
+                    required></div>
               </div>
-              <button type="submit" class="btn btn-primary w-full btn-lg" id="btn-register-mhs">Daftar sebagai Mahasiswa</button>
+              <button type="submit" class="btn btn-primary w-full btn-lg" id="btn-register-mhs">Daftar sebagai
+                Mahasiswa</button>
             </form>
           </div>
 
@@ -353,26 +455,37 @@
           <div class="tab-content" id="form-dosen">
             <form id="register-form-dosen" autocomplete="off">
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="dsn-email">Email</label><input type="email" id="dsn-email" class="form-input" placeholder="email@polsri.ac.id" required></div>
-                <div class="form-group"><label class="form-label" for="dsn-username">Username</label><input type="text" id="dsn-username" class="form-input" placeholder="dosen_username" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-email">Email</label><input type="email"
+                    id="dsn-email" class="form-input" placeholder="email@polsri.ac.id" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-username">Username</label><input type="text"
+                    id="dsn-username" class="form-input" placeholder="dosen_username" required></div>
               </div>
-              <div class="form-group"><label class="form-label" for="dsn-password">Password</label><input type="password" id="dsn-password" class="form-input" placeholder="Minimal 6 karakter" required minlength="6"></div>
+              <div class="form-group"><label class="form-label" for="dsn-password">Password</label><input
+                  type="password" id="dsn-password" class="form-input" placeholder="Minimal 6 karakter" required
+                  minlength="6"></div>
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="dsn-nidn">NIDN</label><input type="text" id="dsn-nidn" class="form-input" placeholder="0012345678" required></div>
-                <div class="form-group"><label class="form-label" for="dsn-fullname">Nama Lengkap</label><input type="text" id="dsn-fullname" class="form-input" placeholder="Nama lengkap" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-nidn">NIDN</label><input type="text"
+                    id="dsn-nidn" class="form-input" placeholder="0012345678" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-fullname">Nama Lengkap</label><input
+                    type="text" id="dsn-fullname" class="form-input" placeholder="Nama lengkap" required></div>
               </div>
               <div class="form-row">
-                <div class="form-group"><label class="form-label" for="dsn-prodi">Program Studi</label><input type="text" id="dsn-prodi" class="form-input" placeholder="Teknik Informatika" required></div>
-                <div class="form-group"><label class="form-label" for="dsn-jurusan">Jurusan</label><input type="text" id="dsn-jurusan" class="form-input" placeholder="Teknik Komputer" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-prodi">Program Studi</label><input
+                    type="text" id="dsn-prodi" class="form-input" placeholder="Teknik Informatika" required></div>
+                <div class="form-group"><label class="form-label" for="dsn-jurusan">Jurusan</label><input type="text"
+                    id="dsn-jurusan" class="form-input" placeholder="Teknik Komputer" required></div>
               </div>
-              <div class="form-group"><label class="form-label" for="dsn-jabatan">Jabatan Fungsional</label><input type="text" id="dsn-jabatan" class="form-input" placeholder="Lektor / Asisten Ahli" required></div>
-              <button type="submit" class="btn btn-primary w-full btn-lg" id="btn-register-dsn">Daftar sebagai Dosen</button>
+              <div class="form-group"><label class="form-label" for="dsn-jabatan">Jabatan Fungsional</label><input
+                  type="text" id="dsn-jabatan" class="form-input" placeholder="Lektor / Asisten Ahli" required></div>
+              <button type="submit" class="btn btn-primary w-full btn-lg" id="btn-register-dsn">Daftar sebagai
+                Dosen</button>
             </form>
           </div>
 
           <div class="register-footer" id="reg-footer">
             <p class="text-sm text-muted">
-              Sudah punya akun? <a href="login.html" style="color: var(--fg-primary); text-decoration: underline;">Masuk di sini</a>
+              Sudah punya akun? <a href="login.html" style="color: var(--fg-primary); text-decoration: underline;">Masuk
+                di sini</a>
             </p>
           </div>
         </div>
@@ -535,4 +648,5 @@
     });
   </script>
 </body>
+
 </html>

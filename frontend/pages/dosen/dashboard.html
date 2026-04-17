@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     .greeting {
       padding: var(--space-2xl) var(--space-xl) var(--space-xl);
     }
+
     .greeting-hello {
       font-size: var(--text-sm);
       color: var(--fg-muted);
@@ -21,6 +23,7 @@
       opacity: 0;
       animation: revealUp 0.6s ease 0.3s forwards;
     }
+
     .greeting-name {
       font-size: clamp(1.8rem, 4vw, var(--text-4xl));
       font-weight: 400;
@@ -39,31 +42,38 @@
       transform: translateY(30px);
       transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .section-panel.visible {
       opacity: 1;
       transform: translateY(0);
     }
+
     .section-panel:hover {
       border-color: var(--border-hover);
     }
+
     .panel-header {
       display: flex;
       align-items: center;
       gap: var(--space-sm);
       margin-bottom: var(--space-sm);
     }
+
     .panel-header h3 {
       font-size: var(--text-xl);
     }
+
     .panel-header .icon {
       opacity: 0.4;
       font-size: var(--text-xl);
     }
+
     .panel-desc {
       font-size: var(--text-sm);
       color: var(--fg-muted);
       margin-bottom: var(--space-xl);
     }
+
     .lookup-row {
       display: flex;
       gap: var(--space-md);
@@ -71,7 +81,10 @@
       flex-wrap: wrap;
       margin-bottom: var(--space-xl);
     }
-    .lookup-row .form-group { margin-bottom: 0; }
+
+    .lookup-row .form-group {
+      margin-bottom: 0;
+    }
 
     .recap-stats {
       display: flex;
@@ -84,17 +97,20 @@
       background: var(--bg-secondary);
       animation: scaleIn 0.4s ease;
     }
+
     .recap-stat-item {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
+
     .recap-stat-item .label {
       font-size: var(--text-xs);
       color: var(--fg-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
+
     .recap-stat-item .value {
       font-size: var(--text-xl);
       font-weight: 400;
@@ -110,6 +126,7 @@
       vertical-align: middle;
       margin-right: var(--space-sm);
     }
+
     .pct-bar-fill {
       height: 100%;
       border-radius: var(--radius-full);
@@ -130,7 +147,10 @@
       position: relative;
       z-index: 1;
     }
-    .greeting { padding: 0 0 var(--space-xl); }
+
+    .greeting {
+      padding: 0 0 var(--space-xl);
+    }
 
     /* ── Floating AI Button ── */
     .floating-ai {
@@ -149,16 +169,18 @@
       align-items: center;
       justify-content: center;
       font-size: var(--text-xl);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
       transition: all 0.3s ease;
       text-decoration: none;
     }
+
     .floating-ai:hover {
       transform: scale(1.08);
-      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
       opacity: 1;
       color: #fff;
     }
+
     .floating-ai-label {
       position: fixed;
       bottom: calc(var(--space-xl) + 64px);
@@ -176,12 +198,14 @@
       pointer-events: none;
       white-space: nowrap;
     }
-    .floating-ai:hover + .floating-ai-label {
+
+    .floating-ai:hover+.floating-ai-label {
       opacity: 1;
       transform: translateY(0);
     }
   </style>
 </head>
+
 <body>
   <div class="dashboard-layout">
     <button class="sidebar-toggle">☰</button>
@@ -205,14 +229,16 @@
             <div class="sidebar-user-role">dosen</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()"
+          style="justify-content: flex-start; gap: var(--space-md);">
           <span>✕</span> Keluar
         </button>
       </div>
     </aside>
 
     <main class="main-content" style="background: var(--bg-primary); position: relative;">
-      <canvas id="dash-name-bg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+      <canvas id="dash-name-bg"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
       <div class="dash-content">
         <div class="greeting">
           <p class="greeting-hello" id="greeting-hello">panel dosen</p>
@@ -221,7 +247,9 @@
 
         <!-- ══ ATTENDANCE RECAP ══ -->
         <div class="section-panel" id="panel-recap">
-          <div class="panel-header"><span class="icon">◎</span><h3>Rekap Kehadiran Kelas</h3></div>
+          <div class="panel-header"><span class="icon">◎</span>
+            <h3>Rekap Kehadiran Kelas</h3>
+          </div>
           <p class="panel-desc">Masukkan kode mata kuliah untuk melihat rekap kehadiran seluruh mahasiswa.</p>
 
           <div class="lookup-row">
@@ -240,7 +268,9 @@
 
         <!-- ══ SESSION DETAIL ══ -->
         <div class="section-panel" id="panel-session">
-          <div class="panel-header"><span class="icon">☰</span><h3>Detail Sesi Pertemuan</h3></div>
+          <div class="panel-header"><span class="icon">☰</span>
+            <h3>Detail Sesi Pertemuan</h3>
+          </div>
           <p class="panel-desc">Lihat siapa saja yang hadir pada pertemuan tertentu.</p>
 
           <div class="lookup-row">
@@ -250,7 +280,8 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="session-pertemuan">Pertemuan Ke</label>
-              <input type="number" id="session-pertemuan" class="form-input" placeholder="1" min="1" max="16" style="width: 120px;">
+              <input type="number" id="session-pertemuan" class="form-input" placeholder="1" min="1" max="16"
+                style="width: 120px;">
             </div>
             <button class="btn btn-primary" id="btn-load-session">Lihat Sesi</button>
           </div>
@@ -407,4 +438,5 @@
     });
   </script>
 </body>
+
 </html>

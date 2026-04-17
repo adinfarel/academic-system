@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,12 +14,22 @@
       display: grid;
       gap: var(--space-xl);
     }
+
     .section-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       padding: var(--space-xl);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    .section-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .section-card h3 {
       font-size: var(--text-lg);
       margin-bottom: var(--space-lg);
@@ -26,16 +37,19 @@
       align-items: center;
       gap: var(--space-sm);
     }
+
     .section-card h3 .icon {
       font-family: var(--font-primary);
       opacity: 0.5;
     }
+
     .camera-preview-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: var(--space-lg);
     }
+
     .camera-placeholder {
       width: 100%;
       max-width: 480px;
@@ -51,20 +65,24 @@
       font-size: var(--text-sm);
       transition: all var(--transition-base);
     }
+
     .camera-placeholder .placeholder-icon {
       font-size: var(--text-4xl);
       opacity: 0.3;
     }
+
     .checkin-form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--space-md);
     }
+
     @media (max-width: 640px) {
       .checkin-form-grid {
         grid-template-columns: 1fr;
       }
     }
+
     .result-card {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
@@ -73,6 +91,7 @@
       margin-top: var(--space-lg);
       animation: fadeInUp 0.4s ease;
     }
+
     .result-row {
       display: flex;
       justify-content: space-between;
@@ -80,16 +99,21 @@
       padding: var(--space-sm) 0;
       border-bottom: 1px solid var(--border-color);
     }
+
     .result-row:last-child {
       border-bottom: none;
     }
+
     .canvas-overlay {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 2;
     }
+
     .captured-preview {
       width: 100%;
       max-width: 480px;
@@ -97,9 +121,10 @@
       border: 1px solid var(--border-color);
     }
 
-    /* ── NO MIRROR — disable all camera mirroring ── */
+    /* ── NO MIRROR — force disable all camera mirroring ── */
     .camera-container video {
       transform: none !important;
+      -webkit-transform: none !important;
     }
 
     /* ── Face Registered Status Card ── */
@@ -107,51 +132,104 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-md);
       padding: var(--space-lg);
-      background: rgba(34, 197, 94, 0.06);
-      border: 1px solid rgba(34, 197, 94, 0.2);
+      background: rgba(34, 197, 94, 0.04);
+      border: 1px solid rgba(34, 197, 94, 0.15);
       border-radius: var(--radius-lg);
       animation: fadeInUp 0.5s ease;
     }
+
     .face-status-left {
       display: flex;
       align-items: center;
       gap: var(--space-md);
     }
+
     .face-status-icon {
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      background: rgba(34, 197, 94, 0.12);
+      background: rgba(34, 197, 94, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: var(--text-xl);
+      flex-shrink: 0;
       animation: faceCheckPulse 2s ease-in-out infinite;
     }
+
     @keyframes faceCheckPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.2); }
-      50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+      }
     }
+
     .face-status-text h4 {
       font-size: var(--text-sm);
       font-weight: 600;
       color: var(--success);
       margin-bottom: 2px;
     }
+
     .face-status-text p {
       font-size: var(--text-xs);
       color: var(--fg-muted);
     }
+
+    /* ── Upload options (camera + gallery) ── */
+    .upload-options {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .upload-option-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 0.625rem 1.25rem;
+      font-size: var(--text-sm);
+      font-weight: 500;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--fg-primary);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .upload-option-btn:hover {
+      border-color: var(--fg-primary);
+      background: var(--fg-primary);
+      color: var(--bg-primary);
+    }
+
+    .upload-option-btn .opt-icon {
+      font-size: var(--text-base);
+      opacity: 0.6;
+    }
+
+    /* Hidden file input for gallery */
+    .gallery-input {
+      display: none;
+    }
   </style>
 </head>
+
 <body>
   <div class="dashboard-layout">
-    <!-- Mobile Toggle -->
     <button class="sidebar-toggle">☰</button>
     <div class="mobile-overlay"></div>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">PolsriEduAI</div>
@@ -179,30 +257,31 @@
             <div class="sidebar-user-role">mahasiswa</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()" style="justify-content: flex-start; gap: var(--space-md);">
+        <button class="btn btn-ghost btn-sm w-full mt-sm" onclick="logout()"
+          style="justify-content: flex-start; gap: var(--space-md);">
           <span>✕</span> Keluar
         </button>
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
       <header class="topbar">
         <div>
           <h1 class="topbar-title">Absensi</h1>
           <p class="topbar-subtitle">Face recognition check-in & riwayat kehadiran</p>
         </div>
-        <div class="topbar-actions">
-        </div>
       </header>
 
       <div class="page-content">
         <div class="absensi-sections">
 
-          <!-- ══ REGISTER FACE ══ -->
-          <div class="section-card" id="section-register-face">
+          <!-- ═══════════════════════════════════════════
+               SECTION A: REGISTER FACE (shown when face NOT registered)
+               ═══════════════════════════════════════════ -->
+          <div class="section-card" id="section-register-face" style="display:none;">
             <h3><span class="icon">⬡</span> Registrasi Wajah</h3>
-            <p class="text-sm text-secondary mb-lg">Daftarkan wajah Anda untuk pertama kali agar sistem bisa mengenali Anda saat absensi.</p>
+            <p class="text-sm text-secondary mb-lg">Daftarkan wajah Anda terlebih dahulu agar sistem bisa mengenali Anda
+              saat absensi.</p>
 
             <div class="camera-preview-wrapper">
               <div class="camera-container" id="register-camera-container" style="display:none;">
@@ -214,84 +293,121 @@
               </div>
               <div class="camera-placeholder" id="register-placeholder">
                 <div class="placeholder-icon">⬡</div>
-                <span>Kamera belum aktif</span>
+                <span>Pilih metode pengambilan foto wajah</span>
               </div>
               <img id="register-preview-img" class="captured-preview hidden" alt="Preview wajah">
+
+              <!-- Upload options: Camera OR Gallery -->
+              <div class="upload-options" id="register-upload-options">
+                <button class="upload-option-btn" id="btn-start-register-cam">
+                  <span class="opt-icon">📷</span> Ambil dari Kamera
+                </button>
+                <label class="upload-option-btn" for="register-gallery-input">
+                  <span class="opt-icon">🖼</span> Pilih dari Galeri
+                </label>
+                <input type="file" id="register-gallery-input" class="gallery-input" accept="image/jpeg,image/png">
+              </div>
+
               <div style="display: flex; gap: var(--space-md);">
-                <button class="btn" id="btn-start-register-cam">Aktifkan Kamera</button>
                 <button class="btn btn-primary hidden" id="btn-submit-face">Daftarkan Wajah</button>
                 <button class="btn btn-danger hidden" id="btn-retake-face">Ulangi</button>
               </div>
             </div>
           </div>
 
-          <!-- ══ FACE REGISTERED STATUS ══ -->
-          <div class="section-card hidden" id="section-face-registered">
-            <div class="face-status-card">
-              <div class="face-status-left">
-                <div class="face-status-icon">✓</div>
-                <div class="face-status-text">
-                  <h4>Wajah Terdaftar</h4>
-                  <p>Wajah Anda sudah terdaftar di sistem. Langsung absensi di bawah.</p>
+          <!-- ═══════════════════════════════════════════
+               SECTION B: FACE REGISTERED STATUS + CHECK-IN
+               (shown when face IS registered)
+               ═══════════════════════════════════════════ -->
+          <div id="section-face-registered-wrapper" style="display:none;">
+
+            <!-- Face registered status -->
+            <div class="section-card" id="section-face-status">
+              <div class="face-status-card">
+                <div class="face-status-left">
+                  <div class="face-status-icon">✓</div>
+                  <div class="face-status-text">
+                    <h4>Wajah Terdaftar</h4>
+                    <p>Wajah Anda sudah terdaftar di sistem. Langsung absensi di bawah.</p>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-danger" id="btn-reset-face">Reset Wajah</button>
+              </div>
+            </div>
+
+            <!-- Check-in card -->
+            <div class="section-card" id="section-checkin" style="margin-top: var(--space-xl);">
+              <h3><span class="icon">◎</span> Check-in Absensi</h3>
+              <p class="text-sm text-secondary mb-lg">Isi data pertemuan lalu ambil foto untuk absensi.</p>
+
+              <div class="checkin-form-grid mb-lg">
+                <div class="form-group">
+                  <label class="form-label" for="ci-matkul">Mata Kuliah</label>
+                  <input type="text" id="ci-matkul" class="form-input" placeholder="Pemrograman Web">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="ci-kode">Kode MK</label>
+                  <input type="text" id="ci-kode" class="form-input" placeholder="TI-2024">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="ci-pertemuan">Pertemuan Ke</label>
+                  <input type="number" id="ci-pertemuan" class="form-input" placeholder="1" min="1" max="16">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="ci-ruangan">Ruangan</label>
+                  <input type="text" id="ci-ruangan" class="form-input" placeholder="GKB-301">
                 </div>
               </div>
-              <button class="btn btn-sm btn-danger" id="btn-reset-face">Reset Wajah</button>
+
+              <div class="camera-preview-wrapper">
+                <div class="camera-container" id="checkin-camera-container" style="display:none;">
+                  <video id="checkin-video" autoplay playsinline></video>
+                  <div class="camera-controls">
+                    <button class="camera-btn" id="btn-capture-checkin" title="Ambil Foto"></button>
+                  </div>
+                </div>
+                <div class="camera-placeholder" id="checkin-placeholder">
+                  <div class="placeholder-icon">◎</div>
+                  <span>Pilih metode pengambilan foto</span>
+                </div>
+                <img id="checkin-preview-img" class="captured-preview hidden" alt="Preview check-in">
+
+                <!-- Upload options: Camera OR Gallery -->
+                <div class="upload-options" id="checkin-upload-options">
+                  <button class="upload-option-btn" id="btn-start-checkin-cam">
+                    <span class="opt-icon">📷</span> Ambil dari Kamera
+                  </button>
+                  <label class="upload-option-btn" for="checkin-gallery-input">
+                    <span class="opt-icon">🖼</span> Pilih dari Galeri
+                  </label>
+                  <input type="file" id="checkin-gallery-input" class="gallery-input" accept="image/jpeg,image/png">
+                </div>
+
+                <div style="display: flex; gap: var(--space-md); flex-wrap: wrap; justify-content: center;">
+                  <button class="btn btn-primary hidden" id="btn-submit-checkin">Submit Check-in</button>
+                  <button class="btn btn-danger hidden" id="btn-retake-checkin">Ulangi</button>
+                </div>
+              </div>
+
+              <div id="checkin-result" class="hidden"></div>
             </div>
           </div>
 
-          <!-- ══ CHECK-IN ══ -->
-          <div class="section-card" id="section-checkin">
-            <h3><span class="icon">◎</span> Check-in Absensi</h3>
-            <p class="text-sm text-secondary mb-lg">Isi data pertemuan lalu ambil foto untuk absensi.</p>
-
-            <div class="checkin-form-grid mb-lg">
-              <div class="form-group">
-                <label class="form-label" for="ci-matkul">Mata Kuliah</label>
-                <input type="text" id="ci-matkul" class="form-input" placeholder="Pemrograman Web">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="ci-kode">Kode MK</label>
-                <input type="text" id="ci-kode" class="form-input" placeholder="TI-2024">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="ci-pertemuan">Pertemuan Ke</label>
-                <input type="number" id="ci-pertemuan" class="form-input" placeholder="1" min="1" max="16">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="ci-ruangan">Ruangan</label>
-                <input type="text" id="ci-ruangan" class="form-input" placeholder="GKB-301">
-              </div>
+          <!-- ═══════════════════════════════════════════
+               SECTION C: LOADING STATE
+               ═══════════════════════════════════════════ -->
+          <div class="section-card visible" id="section-loading">
+            <div style="text-align:center;padding:var(--space-xl);">
+              <div class="spinner" style="margin:0 auto var(--space-md);"></div>
+              <p class="text-sm text-muted">Memeriksa status wajah...</p>
             </div>
-
-            <div class="camera-preview-wrapper">
-              <div class="camera-container" id="checkin-camera-container" style="display:none;">
-                <video id="checkin-video" autoplay playsinline></video>
-                <div class="camera-controls">
-                  <button class="camera-btn" id="btn-capture-checkin" title="Ambil Foto"></button>
-                </div>
-              </div>
-              <div class="camera-placeholder" id="checkin-placeholder">
-                <div class="placeholder-icon">◎</div>
-                <span>Kamera belum aktif</span>
-              </div>
-              <img id="checkin-preview-img" class="captured-preview hidden" alt="Preview check-in">
-              <div style="display: flex; gap: var(--space-md); flex-wrap: wrap; justify-content: center;">
-                <button class="btn" id="btn-start-checkin-cam">Aktifkan Kamera</button>
-                <button class="btn btn-primary hidden" id="btn-submit-checkin">Submit Check-in</button>
-                <button class="btn btn-danger hidden" id="btn-retake-checkin">Ulangi</button>
-              </div>
-            </div>
-
-            <!-- Check-in Result -->
-            <div id="checkin-result" class="hidden"></div>
           </div>
 
           <!-- ══ HISTORY ══ -->
-          <div class="section-card">
+          <div class="section-card" id="section-history">
             <h3><span class="icon">☰</span> Riwayat Kehadiran</h3>
-
-            <div class="table-wrapper" id="history-table-wrapper">
-              <table class="table" id="history-table">
+            <div class="table-wrapper">
+              <table class="table">
                 <thead>
                   <tr>
                     <th>Mata Kuliah</th>
@@ -303,7 +419,8 @@
                 </thead>
                 <tbody id="history-body">
                   <tr>
-                    <td colspan="5" class="text-center text-muted" style="padding: var(--space-xl);">Memuat riwayat...</td>
+                    <td colspan="5" class="text-center text-muted" style="padding: var(--space-xl);">Memuat riwayat...
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -342,9 +459,7 @@
     }
 
     function stopCamera(stream) {
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-      }
+      if (stream) stream.getTracks().forEach(t => t.stop());
     }
 
     function captureFrame(videoEl) {
@@ -352,10 +467,22 @@
       canvas.width = videoEl.videoWidth;
       canvas.height = videoEl.videoHeight;
       const ctx = canvas.getContext('2d');
-      // NO MIRROR — draw directly without flipping
+      // NO MIRROR — draw directly, no flip
       ctx.drawImage(videoEl, 0, 0);
       return new Promise(resolve => {
         canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.92);
+      });
+    }
+
+    // Gallery file → blob
+    function fileToBlob(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = new Blob([reader.result], { type: file.type });
+          resolve(blob);
+        };
+        reader.readAsArrayBuffer(file);
       });
     }
 
@@ -363,42 +490,54 @@
       const user = await initDashboardPage(['mahasiswa']);
       if (!user) return;
 
+      const sectionLoading = document.getElementById('section-loading');
+      const sectionRegisterFace = document.getElementById('section-register-face');
+      const sectionFaceRegisteredWrapper = document.getElementById('section-face-registered-wrapper');
+      const sectionHistory = document.getElementById('section-history');
+
       // ══════════════════════════════════════════
-      // CHECK FACE REGISTRATION STATUS
+      // CHECK FACE STATUS
       // ══════════════════════════════════════════
       let faceRegistered = false;
 
       try {
         const meData = await apiGet('/api/v1/academic/me');
-        faceRegistered = meData.academic && meData.academic.face_registered;
+        faceRegistered = !!(meData.academic && meData.academic.face_registered);
       } catch (e) {
-        // Silently fail — default to showing register card
+        // Default: show register card
       }
 
-      const sectionRegisterFace = document.getElementById('section-register-face');
-      const sectionFaceRegistered = document.getElementById('section-face-registered');
-      const sectionCheckin = document.getElementById('section-checkin');
+      // Hide loading, show correct section
+      sectionLoading.style.display = 'none';
 
-      if (faceRegistered) {
-        // Face IS registered — hide register card, show status + checkin
-        sectionRegisterFace.classList.add('hidden');
-        sectionFaceRegistered.classList.remove('hidden');
-        sectionCheckin.style.display = '';
-      } else {
-        // Face NOT registered — show register card, hide checkin
-        sectionRegisterFace.classList.remove('hidden');
-        sectionFaceRegistered.classList.add('hidden');
-        sectionCheckin.classList.add('hidden');
+      function showCorrectSection() {
+        if (faceRegistered) {
+          // Face IS registered → hide register, show status + checkin
+          sectionRegisterFace.style.display = 'none';
+          sectionFaceRegisteredWrapper.style.display = 'block';
+          // Animate cards in
+          sectionFaceRegisteredWrapper.querySelectorAll('.section-card').forEach((c, i) => {
+            setTimeout(() => c.classList.add('visible'), 100 + i * 150);
+          });
+        } else {
+          // Face NOT registered → show register, hide checkin
+          sectionRegisterFace.style.display = 'block';
+          sectionFaceRegisteredWrapper.style.display = 'none';
+          setTimeout(() => sectionRegisterFace.classList.add('visible'), 100);
+        }
       }
 
-      // Reset face button — show register card again
+      showCorrectSection();
+      setTimeout(() => sectionHistory.classList.add('visible'), 400);
+
+      // Reset face → switch back to register
       document.getElementById('btn-reset-face').addEventListener('click', () => {
-        sectionRegisterFace.classList.remove('hidden');
-        sectionFaceRegistered.classList.add('hidden');
+        faceRegistered = false;
+        showCorrectSection();
       });
 
       // ══════════════════════════════════════════
-      // REGISTER FACE
+      // REGISTER FACE — Camera
       // ══════════════════════════════════════════
       const regVideo = document.getElementById('register-video');
       const btnStartRegCam = document.getElementById('btn-start-register-cam');
@@ -406,10 +545,11 @@
       const btnSubmitFace = document.getElementById('btn-submit-face');
       const btnRetakeFace = document.getElementById('btn-retake-face');
       const regPreviewImg = document.getElementById('register-preview-img');
+      const regUploadOptions = document.getElementById('register-upload-options');
 
       btnStartRegCam.addEventListener('click', async () => {
         registerStream = await startCamera(regVideo, 'register-camera-container', 'register-placeholder');
-        if (registerStream) btnStartRegCam.classList.add('hidden');
+        if (registerStream) regUploadOptions.classList.add('hidden');
       });
 
       btnCaptureFace.addEventListener('click', async () => {
@@ -422,30 +562,45 @@
         stopCamera(registerStream);
       });
 
+      // Gallery option for registration
+      document.getElementById('register-gallery-input').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        registerBlob = await fileToBlob(file);
+        regPreviewImg.src = URL.createObjectURL(registerBlob);
+        regPreviewImg.classList.remove('hidden');
+        document.getElementById('register-placeholder').style.display = 'none';
+        regUploadOptions.classList.add('hidden');
+        btnSubmitFace.classList.remove('hidden');
+        btnRetakeFace.classList.remove('hidden');
+      });
+
       btnRetakeFace.addEventListener('click', async () => {
         regPreviewImg.classList.add('hidden');
         btnSubmitFace.classList.add('hidden');
         btnRetakeFace.classList.add('hidden');
         registerBlob = null;
-        registerStream = await startCamera(regVideo, 'register-camera-container', 'register-placeholder');
+        document.getElementById('register-placeholder').style.display = '';
+        document.getElementById('register-camera-container').style.display = 'none';
+        regUploadOptions.classList.remove('hidden');
+        stopCamera(registerStream);
+        registerStream = null;
+        // Reset file input
+        document.getElementById('register-gallery-input').value = '';
       });
 
       btnSubmitFace.addEventListener('click', async () => {
         if (!registerBlob) return;
         btnSubmitFace.disabled = true;
         btnSubmitFace.textContent = 'Mendaftarkan...';
-
         try {
           const formData = new FormData();
           formData.append('file', registerBlob, 'face.jpg');
           const result = await apiFormData('/api/v1/absence/register-face', formData);
           showToast(result.message || 'Wajah berhasil didaftarkan!', 'success');
-
-          // Update UI — hide register, show status + checkin
-          sectionRegisterFace.classList.add('hidden');
-          sectionFaceRegistered.classList.remove('hidden');
-          sectionCheckin.classList.remove('hidden');
+          // Switch to registered view
           faceRegistered = true;
+          showCorrectSection();
         } catch (error) {
           showToast(error.message, 'error');
           btnSubmitFace.disabled = false;
@@ -454,7 +609,7 @@
       });
 
       // ══════════════════════════════════════════
-      // CHECK-IN
+      // CHECK-IN — Camera
       // ══════════════════════════════════════════
       const ciVideo = document.getElementById('checkin-video');
       const btnStartCiCam = document.getElementById('btn-start-checkin-cam');
@@ -462,10 +617,11 @@
       const btnSubmitCi = document.getElementById('btn-submit-checkin');
       const btnRetakeCi = document.getElementById('btn-retake-checkin');
       const ciPreviewImg = document.getElementById('checkin-preview-img');
+      const ciUploadOptions = document.getElementById('checkin-upload-options');
 
       btnStartCiCam.addEventListener('click', async () => {
         checkinStream = await startCamera(ciVideo, 'checkin-camera-container', 'checkin-placeholder');
-        if (checkinStream) btnStartCiCam.classList.add('hidden');
+        if (checkinStream) ciUploadOptions.classList.add('hidden');
       });
 
       btnCaptureCi.addEventListener('click', async () => {
@@ -478,12 +634,30 @@
         stopCamera(checkinStream);
       });
 
+      // Gallery option for check-in
+      document.getElementById('checkin-gallery-input').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        checkinBlob = await fileToBlob(file);
+        ciPreviewImg.src = URL.createObjectURL(checkinBlob);
+        ciPreviewImg.classList.remove('hidden');
+        document.getElementById('checkin-placeholder').style.display = 'none';
+        ciUploadOptions.classList.add('hidden');
+        btnSubmitCi.classList.remove('hidden');
+        btnRetakeCi.classList.remove('hidden');
+      });
+
       btnRetakeCi.addEventListener('click', async () => {
         ciPreviewImg.classList.add('hidden');
         btnSubmitCi.classList.add('hidden');
         btnRetakeCi.classList.add('hidden');
         checkinBlob = null;
-        checkinStream = await startCamera(ciVideo, 'checkin-camera-container', 'checkin-placeholder');
+        document.getElementById('checkin-placeholder').style.display = '';
+        document.getElementById('checkin-camera-container').style.display = 'none';
+        ciUploadOptions.classList.remove('hidden');
+        stopCamera(checkinStream);
+        checkinStream = null;
+        document.getElementById('checkin-gallery-input').value = '';
       });
 
       btnSubmitCi.addEventListener('click', async () => {
@@ -521,7 +695,6 @@
           const result = await apiFormData(`/api/v1/absence/check-in?${queryParams.toString()}`, formData);
           showToast(result.message || 'Check-in berhasil!', 'success');
 
-          // Show result card
           const d = result.data;
           document.getElementById('checkin-result').classList.remove('hidden');
           document.getElementById('checkin-result').innerHTML = `
@@ -535,10 +708,7 @@
               <div class="result-row"><span class="text-muted text-sm">Liveness Score</span><span class="text-sm">${(d.liveness_score * 100).toFixed(1)}%</span></div>
             </div>
           `;
-
-          // Reload history
           loadHistory();
-
         } catch (error) {
           showToast(error.message, 'error');
         } finally {
@@ -554,12 +724,10 @@
         try {
           const data = await apiGet('/api/v1/absence/history');
           const tbody = document.getElementById('history-body');
-
           if (!data.records || data.records.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">☰</div><p>Belum ada riwayat kehadiran.</p></div></td></tr>`;
             return;
           }
-
           tbody.innerHTML = data.records.map(r => `
             <tr>
               <td>${escapeHtml(r.mata_kuliah)}</td>
@@ -575,9 +743,9 @@
           `;
         }
       }
-
       loadHistory();
     });
   </script>
 </body>
+
 </html>

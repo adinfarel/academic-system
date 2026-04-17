@@ -72,6 +72,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     role: UserRole
     username: str
+    must_change_password: bool = False
 
 class UserResponse(BaseModel):
     """
@@ -83,6 +84,7 @@ class UserResponse(BaseModel):
     username: str
     role: UserRole
     is_active: bool
+    must_change_password: bool = False
     created_at: datetime
     
     class Config:
@@ -163,3 +165,11 @@ class MahasiswaResponse(BaseModel):
 
     class Config:
         from_attributes = True
+    
+class RejectRequest(BaseModel):
+    """Schema for rejection request — admin can fill in optional reason."""
+    reason: Optional[str] = None
+
+class ChangePasswordRequest(BaseModel):
+    """Schema to change password for first time."""
+    new_password: str

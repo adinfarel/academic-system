@@ -60,6 +60,14 @@ class Settings(BaseSettings):
     CAMPUS_LONGITUDE: float = 104.726011
     CAMPUS_RADIUS_METER: float = 300.0
     
+    # EMAIL STMP
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str
+    SMTP_PASSWORD: str
+    SMTP_FROM_NAME: str
+    SMTP_FROM_EMAIL: str
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

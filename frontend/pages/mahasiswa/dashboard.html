@@ -10,6 +10,110 @@
   <link rel="stylesheet" href="../../assets/css/layout.css">
 
   <style>
+    /* ── Password Change Banner ── */
+    .pw-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-xl);
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: bannerReveal 0.5s ease 0.4s forwards;
+    }
+
+    @keyframes bannerReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pw-banner-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--fg-primary);
+      color: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .pw-banner-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pw-banner-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--fg-primary);
+      margin-bottom: 2px;
+    }
+
+    .pw-banner-desc {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+      line-height: 1.4;
+    }
+
+    .pw-banner-btn {
+      flex-shrink: 0;
+      padding: 0.45rem 1rem;
+      font-size: var(--text-xs);
+      font-weight: 600;
+      background: var(--fg-primary);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .pw-banner-btn:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    .pw-banner-close {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--fg-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .pw-banner-close:hover {
+      background: var(--bg-card-hover);
+      color: var(--fg-primary);
+    }
+
+    @media (max-width: 640px) {
+      .pw-banner {
+        flex-wrap: wrap;
+      }
+
+      .pw-banner-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
     /* ── Animated greeting ── */
     .greeting {
       padding: var(--space-2xl) var(--space-xl) var(--space-xl);
@@ -367,6 +471,20 @@
       <canvas id="dash-name-bg"
         style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
       <div class="dash-content">
+
+        <!-- Password Change Banner -->
+        <div class="pw-banner hidden" id="pw-notif">
+          <div class="pw-banner-icon">🔒</div>
+          <div class="pw-banner-text">
+            <div class="pw-banner-title">Ganti Password Anda</div>
+            <div class="pw-banner-desc">Anda masih login menggunakan kode verifikasi. Demi keamanan akun, segera buat
+              password baru.</div>
+          </div>
+          <button class="pw-banner-btn"
+            onclick="document.getElementById('modal-change-pw').classList.add('active')">Ganti Password →</button>
+          <button class="pw-banner-close" onclick="this.parentElement.classList.add('hidden')" title="Tutup">✕</button>
+        </div>
+
         <!-- Animated Greeting -->
         <div class="greeting">
           <p class="greeting-hello" id="greeting-hello">selamat datang kembali</p>
@@ -434,6 +552,33 @@
     </main>
   </div>
 
+  <!-- Change Password Modal -->
+  <div class="modal-overlay" id="modal-change-pw">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h3>Ganti Password</h3>
+        <button class="modal-close"
+          onclick="document.getElementById('modal-change-pw').classList.remove('active')">✕</button>
+      </div>
+      <p class="text-sm text-secondary mb-lg">Anda sedang login dengan kode verifikasi. Buat password baru untuk
+        keamanan akun.</p>
+      <form id="change-pw-form" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label" for="new-password">Password Baru</label>
+          <input type="password" id="new-password" class="form-input" placeholder="Minimal 8 karakter" required
+            minlength="8">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">Konfirmasi Password</label>
+          <input type="password" id="confirm-password" class="form-input" placeholder="Ulangi password baru" required
+            minlength="8">
+        </div>
+        <div id="pw-error" class="form-error" style="margin-bottom:var(--space-md);display:none;"></div>
+        <button type="submit" class="btn btn-primary w-full" id="btn-change-pw">Simpan Password Baru</button>
+      </form>
+    </div>
+  </div>
+
   <script src="../../assets/js/particles.js"></script>
   <script src="../../assets/js/utils.js"></script>
   <script src="../../assets/js/api.js"></script>
@@ -442,6 +587,54 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await initDashboardPage(['mahasiswa', 'admin']);
       if (!user) return;
+      // ── Password change notification ──
+      const cachedUser = getCachedUser();
+      if (cachedUser && cachedUser.must_change_password) {
+        document.getElementById('pw-notif').classList.remove('hidden');
+      }
+
+      // Change password form
+      document.getElementById('change-pw-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newPw = document.getElementById('new-password').value;
+        const confirmPw = document.getElementById('confirm-password').value;
+        const errEl = document.getElementById('pw-error');
+        errEl.style.display = 'none';
+
+        if (newPw !== confirmPw) {
+          errEl.textContent = 'Password tidak cocok.';
+          errEl.style.display = 'block';
+          return;
+        }
+        if (newPw.length < 8) {
+          errEl.textContent = 'Password minimal 8 karakter.';
+          errEl.style.display = 'block';
+          return;
+        }
+
+        const btn = document.getElementById('btn-change-pw');
+        btn.disabled = true; btn.textContent = 'Menyimpan...';
+        try {
+          await apiPost('/api/v1/auth/change-password', { new_password: newPw });
+          showToast('Password berhasil diubah! Silakan login ulang.', 'success');
+          // Update cached user
+          const cu = getCachedUser();
+          if (cu) { cu.must_change_password = false; setCachedUser(cu); }
+          document.getElementById('pw-notif').classList.add('hidden');
+          document.getElementById('modal-change-pw').classList.remove('active');
+          // Force re-login with new password
+          setTimeout(() => { logout(); }, 1500);
+        } catch (error) {
+          errEl.textContent = error.message;
+          errEl.style.display = 'block';
+          btn.disabled = false; btn.textContent = 'Simpan Password Baru';
+        }
+      });
+
+      // Close modal on overlay click
+      document.getElementById('modal-change-pw').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-change-pw') e.target.classList.remove('active');
+      });
 
       // ── Animated greeting ──
       document.getElementById('greeting-name').textContent = user.username;
