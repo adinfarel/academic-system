@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics — PolsriEduAI</title>
+  <title>Analytics — Scholaria</title>
   <link rel="stylesheet" href="../../assets/css/base.css">
   <link rel="stylesheet" href="../../assets/css/components.css">
   <link rel="stylesheet" href="../../assets/css/layout.css">
@@ -383,7 +383,7 @@
 
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo">PolsriEduAI</div>
+        <div class="sidebar-logo">Scholaria</div>
         <div class="sidebar-role">Mahasiswa</div>
       </div>
       <nav class="sidebar-nav">
@@ -398,6 +398,9 @@
         </a>
         <a href="analytics.html" class="sidebar-link active">
           <i class="link-icon">◐</i> Analytics
+        </a>
+        <a href="analytics.html#nilai" class="sidebar-link" id="nav-nilai">
+          <i class="link-icon">◑</i> Nilai & Transkrip
         </a>
       </nav>
       <div class="sidebar-footer">
@@ -454,7 +457,7 @@
 
         <!-- IPK per Semester (Line) -->
         <div class="chart-card" id="chart-ipk">
-          <h3><span class="chart-icon">◉</span> IPK per Semester <span class="dummy-badge">SIMULASI</span></h3>
+          <h3><span class="chart-icon">◉</span> IPK per Semester</h3>
           <p class="chart-desc">Tren indeks prestasi kumulatif dari semester ke semester</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-ipk"></canvas>
@@ -463,7 +466,7 @@
 
         <!-- IPS per Semester (Grouped Bar) -->
         <div class="chart-card" id="chart-ips">
-          <h3><span class="chart-icon">◎</span> IPS per Semester <span class="dummy-badge">SIMULASI</span></h3>
+          <h3><span class="chart-icon">◎</span> IPS per Semester</h3>
           <p class="chart-desc">Perbandingan IPS dan IPK tiap semester</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-ips"></canvas>
@@ -522,6 +525,73 @@
 
       </div>
 
+      <!-- ══ GRADE / TRANSKRIP SECTION ══ -->
+      <div id="nilai" style="scroll-margin-top: 80px;">
+        <div style="padding: 0 var(--space-xl) var(--space-lg); max-width: 1100px; margin: 0 auto;">
+          <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--fg-primary); margin-bottom: var(--space-xs);">📋 Nilai &amp; Transkrip</h2>
+          <p style="font-size: var(--text-sm); color: var(--fg-muted);">Rekap nilai seluruh mata kuliah yang telah ditempuh</p>
+        </div>
+
+        <!-- Summary IPK cards -->
+        <div class="quick-stats" id="grade-summary-stats" style="padding-bottom: var(--space-md);">
+          <div class="quick-stat-card" style="opacity:1;transform:none;">
+            <div class="qs-label">IPK Kumulatif</div>
+            <div class="qs-value" id="gs-ipk">—</div>
+            <div class="qs-sub" id="gs-ipk-sub">Memuat...</div>
+          </div>
+          <div class="quick-stat-card" style="opacity:1;transform:none;">
+            <div class="qs-label">Total SKS Lulus</div>
+            <div class="qs-value" id="gs-sks-pass">—</div>
+            <div class="qs-sub" id="gs-sks-sub">dari total SKS</div>
+          </div>
+          <div class="quick-stat-card" style="opacity:1;transform:none;">
+            <div class="qs-label">Semester Tempuh</div>
+            <div class="qs-value" id="gs-sem">—</div>
+            <div class="qs-sub">semester dengan nilai</div>
+          </div>
+          <div class="quick-stat-card" style="opacity:1;transform:none;">
+            <div class="qs-label">Nilai Terbaik</div>
+            <div class="qs-value" id="gs-best">—</div>
+            <div class="qs-sub" id="gs-best-sub">MK tertinggi</div>
+          </div>
+        </div>
+
+        <!-- Transkrip table -->
+        <div style="padding: 0 var(--space-xl) var(--space-2xl); max-width: 1100px; margin: 0 auto;">
+          <div class="chart-card" style="opacity:1;transform:none;padding:0;overflow:hidden;">
+            <div style="padding: var(--space-lg) var(--space-xl); border-bottom: 1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap: var(--space-md);">
+              <div>
+                <h3 style="font-size:var(--text-base);font-weight:600;margin:0;">Detail Nilai per Mata Kuliah</h3>
+                <p style="font-size:var(--text-xs);color:var(--fg-muted);margin-top:2px;">Semua semester — klik header untuk mengurutkan</p>
+              </div>
+              <div style="display:flex;gap:var(--space-sm);align-items:center;">
+                <select id="filter-semester" class="form-input" style="width:auto;font-size:var(--text-xs);padding:0.35rem 0.75rem;">
+                  <option value="all">Semua Semester</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrapper" style="border-radius:0;border:none;">
+              <table class="table" id="grade-table">
+                <thead>
+                  <tr>
+                    <th>Kode MK</th>
+                    <th>Nama Mata Kuliah</th>
+                    <th>SKS</th>
+                    <th>Semester</th>
+                    <th>Nilai</th>
+                    <th>Bobot</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="grade-tbody">
+                  <tr><td colspan="7" class="text-center text-muted" style="padding:var(--space-xl);">Memuat data nilai...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -547,12 +617,13 @@
       bg: '#f7f7f8',
     };
 
-    // ── Dummy IPK/IPS Data ──
-    const dummyIPK = {
-      semesters: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'],
-      ips: [3.45, 3.52, 3.38, 3.61, 3.72, 3.55],
-      ipk: [3.45, 3.48, 3.45, 3.49, 3.54, 3.54],
-    };
+    // Grade data (populated from API)
+    let gradeTranscript = null;
+    let allGradeData = [];
+
+    // Chart instances (for update on filter)
+    let chartIPK = null;
+    let chartIPS = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await initDashboardPage(['mahasiswa']);
@@ -571,19 +642,27 @@
       let profileData = null;
 
       try {
-        const [meRes, histRes] = await Promise.all([
+        const [meRes, histRes, transcriptRes] = await Promise.all([
           apiGet('/api/v1/academic/me'),
           apiGet('/api/v1/absence/history'),
+          apiGet('/api/v1/grade/trascript/me').catch(() => null),
         ]);
         profileData = meRes;
         historyData = histRes;
+        gradeTranscript = transcriptRes;
       } catch (e) {
         showToast('Gagal memuat data analytics: ' + e.message, 'error');
       }
 
       // ── Quick Stats ──
-      document.getElementById('qs-ipk').textContent = '3.54';
-      document.getElementById('qs-ipk-sub').textContent = 'Data simulasi';
+      if (gradeTranscript) {
+        const gpa = gradeTranscript.gpa || 0;
+        document.getElementById('qs-ipk').textContent = gpa.toFixed(2);
+        document.getElementById('qs-ipk-sub').textContent = `${gradeTranscript.total_sks_completed || 0} SKS ditempuh`;
+      } else {
+        document.getElementById('qs-ipk').textContent = '—';
+        document.getElementById('qs-ipk-sub').textContent = 'Belum ada nilai';
+      }
 
       if (historyData) {
         document.getElementById('qs-hadir').textContent = historyData.total_attendance || 0;
@@ -598,14 +677,38 @@
         document.getElementById('qs-sem-sub').textContent = `Tahun ${profileData.profile?.entry_year || '-'}`;
       }
 
-      // ══ CHART 1: IPK (Line) ══
-      new Chart(document.getElementById('canvas-ipk'), {
+      // ══ CHART 1 & 2: IPK/IPS — using REAL data from transcript ══
+      const ipsPerSemester = gradeTranscript?.ips_per_semester || [];
+
+      // Build cumulative IPK from IPS list
+      let cumSKS = 0, cumWeightedSum = 0;
+      const ipkCumulative = ipsPerSemester.map(s => {
+        cumSKS += s.total_sks;
+        cumWeightedSum += s.ips * s.total_sks;
+        return cumSKS > 0 ? Math.round((cumWeightedSum / cumSKS) * 100) / 100 : 0;
+      });
+
+      const semLabels = ipsPerSemester.length > 0
+        ? ipsPerSemester.map(s => `Sem ${s.semester_ke}`)
+        : ['Sem 1', 'Sem 2', 'Sem 3'];
+
+      const ipsValues = ipsPerSemester.map(s => s.ips);
+      const ipkValues = ipkCumulative;
+
+      const hasGradeData = ipsPerSemester.length > 0;
+
+      // Fallback placeholder when no data
+      const plotIPS = hasGradeData ? ipsValues : [];
+      const plotIPK = hasGradeData ? ipkValues : [];
+      const plotLabels = hasGradeData ? semLabels : [];
+
+      chartIPK = new Chart(document.getElementById('canvas-ipk'), {
         type: 'line',
         data: {
-          labels: dummyIPK.semesters,
+          labels: plotLabels,
           datasets: [{
-            label: 'IPK',
-            data: dummyIPK.ipk,
+            label: 'IPK Kumulatif',
+            data: plotIPK,
             borderColor: MONO.black,
             backgroundColor: 'rgba(0, 0, 0, 0.04)',
             fill: true,
@@ -618,33 +721,52 @@
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => 'IPK: ' + ctx.raw.toFixed(2) } }
+          },
           scales: {
-            y: { min: 2.0, max: 4.0, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v.toFixed(2) } },
+            y: {
+              min: hasGradeData ? Math.max(0, Math.min(...plotIPK) - 0.5) : 0,
+              max: 4.0,
+              grid: { color: 'rgba(0,0,0,0.04)' },
+              ticks: { callback: v => v.toFixed(2) }
+            },
             x: { grid: { display: false } },
           },
+          ...(hasGradeData ? {} : { plugins: { legend: { display: false }, ...{
+            annotation: { annotations: [{ type: 'label', content: 'Belum ada data nilai', color: '#999', font: { size: 13 } }] }
+          }}}
+          )
         }
       });
 
-      // ══ CHART 2: IPS (Grouped Bar) ══
-      new Chart(document.getElementById('canvas-ips'), {
+      chartIPS = new Chart(document.getElementById('canvas-ips'), {
         type: 'bar',
         data: {
-          labels: dummyIPK.semesters,
+          labels: plotLabels,
           datasets: [
-            { label: 'IPS', data: dummyIPK.ips, backgroundColor: MONO.black, borderRadius: 6, barPercentage: 0.5 },
-            { label: 'IPK', data: dummyIPK.ipk, backgroundColor: MONO.light, borderRadius: 6, barPercentage: 0.5 },
+            { label: 'IPS', data: plotIPS, backgroundColor: MONO.black, borderRadius: 6, barPercentage: 0.5 },
+            { label: 'IPK', data: plotIPK, backgroundColor: MONO.light, borderRadius: 6, barPercentage: 0.5 },
           ]
         },
         options: {
           responsive: true,
           plugins: { legend: { position: 'top' } },
           scales: {
-            y: { min: 2.0, max: 4.0, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v.toFixed(1) } },
+            y: {
+              min: hasGradeData ? Math.max(0, Math.min(...plotIPS, ...plotIPK) - 0.5) : 0,
+              max: 4.0,
+              grid: { color: 'rgba(0,0,0,0.04)' },
+              ticks: { callback: v => v.toFixed(1) }
+            },
             x: { grid: { display: false } },
           },
         }
       });
+
+      // ══ LOAD GRADE TABLE ══
+      renderGradeTable(gradeTranscript);
 
       // ══ CHART 3: Kehadiran per MK (Bar) — REAL ══
       const mkCount = {};
@@ -823,6 +945,113 @@
       });
 
       alertList.innerHTML = html;
+    }
+
+    // ── GRADE TABLE ──
+    function renderGradeTable(transcript) {
+      const tbody = document.getElementById('grade-tbody');
+      const filterSem = document.getElementById('filter-semester');
+
+      if (!transcript || !transcript.nilai_detail || transcript.nilai_detail.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-icon" style="font-size:2rem;opacity:0.3;">📋</div><p>Belum ada nilai yang diinput oleh dosen.</p></div></td></tr>';
+        updateGradeSummary(null);
+        return;
+      }
+
+      allGradeData = transcript.nilai_detail;
+
+      // Populate semester filter
+      const semesters = [...new Set(allGradeData.map(n => n.semester_ke))].sort((a, b) => a - b);
+      filterSem.innerHTML = '<option value="all">Semua Semester</option>' +
+        semesters.map(s => `<option value="${s}">Semester ${s}</option>`).join('');
+
+      // Render table
+      renderFilteredGrades('all');
+
+      filterSem.addEventListener('change', () => {
+        renderFilteredGrades(filterSem.value);
+      });
+
+      // Summary cards
+      updateGradeSummary(transcript);
+    }
+
+    function renderFilteredGrades(semFilter) {
+      const tbody = document.getElementById('grade-tbody');
+      const filtered = semFilter === 'all'
+        ? allGradeData
+        : allGradeData.filter(n => String(n.semester_ke) === String(semFilter));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding:var(--space-xl);">Tidak ada nilai untuk semester ini.</td></tr>';
+        return;
+      }
+
+      const GRADE_COLOR = { A: 'badge-success', B: 'badge-success', C: 'badge-warning', D: 'badge-danger', E: 'badge-danger' };
+      const GRADE_STATUS = { A: 'Lulus', B: 'Lulus', C: 'Lulus', D: 'Lulus', E: 'Tidak Lulus' };
+
+      tbody.innerHTML = filtered.map((n, i) => {
+        const gradeKey = (n.letter_grade || '').toString().toUpperCase();
+        const badgeClass = GRADE_COLOR[gradeKey] || 'badge-neutral';
+        const status = GRADE_STATUS[gradeKey] || '-';
+        const statusBadge = gradeKey === 'E'
+          ? '<span class="badge badge-danger">Tidak Lulus</span>'
+          : '<span class="badge badge-success">Lulus</span>';
+        return `
+          <tr style="animation: revealUp 0.3s ease ${i * 0.04}s both;">
+            <td><code style="font-size:var(--text-xs);">${escapeHtml(n.kode_mk)}</code></td>
+            <td>${escapeHtml(n.nama_mk)}</td>
+            <td style="text-align:center;">${n.sks}</td>
+            <td style="text-align:center;">Sem ${n.semester_ke}</td>
+            <td style="text-align:center;">
+              <span class="badge ${badgeClass}" style="font-size:var(--text-base);font-weight:700;">${escapeHtml(gradeKey)}</span>
+            </td>
+            <td style="text-align:center;">${(n.weight || 0).toFixed(1)}</td>
+            <td>${statusBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateGradeSummary(transcript) {
+      if (!transcript) {
+        document.getElementById('gs-ipk').textContent = '-';
+        document.getElementById('gs-ipk-sub').textContent = 'Belum ada data';
+        document.getElementById('gs-sks-pass').textContent = '-';
+        document.getElementById('gs-sks-sub').textContent = '-';
+        document.getElementById('gs-sem').textContent = '-';
+        document.getElementById('gs-best').textContent = '-';
+        document.getElementById('gs-best-sub').textContent = '-';
+        return;
+      }
+
+      const gpa = transcript.gpa || 0;
+      document.getElementById('gs-ipk').textContent = gpa.toFixed(2);
+      document.getElementById('gs-ipk-sub').textContent =
+        gpa >= 3.5 ? '🏆 Cumlaude' : gpa >= 3.0 ? '✓ Sangat Memuaskan' : gpa >= 2.0 ? 'Memuaskan' : 'Perlu ditingkatkan';
+
+      const sksPass = transcript.total_sks_pass || 0;
+      const sksTot = transcript.total_sks_completed || 0;
+      document.getElementById('gs-sks-pass').textContent = sksPass;
+      document.getElementById('gs-sks-sub').textContent = `dari ${sksTot} SKS ditempuh`;
+
+      document.getElementById('gs-sem').textContent = transcript.total_semester || 0;
+
+      // Best grade MK
+      const allMK = transcript.nilai_detail || [];
+      const bestMK = allMK.reduce((best, n) => {
+        if (!best || (n.weight || 0) > (best.weight || 0)) return n;
+        return best;
+      }, null);
+
+      if (bestMK) {
+        const gradeKey = (bestMK.letter_grade || '').toString().toUpperCase();
+        document.getElementById('gs-best').textContent = gradeKey;
+        document.getElementById('gs-best-sub').textContent = bestMK.nama_mk?.substring(0, 20) || '-';
+      } else {
+        document.getElementById('gs-best').textContent = '-';
+        document.getElementById('gs-best-sub').textContent = '-';
+      }
     }
   </script>
 </body>
