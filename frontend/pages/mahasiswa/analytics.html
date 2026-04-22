@@ -388,19 +388,19 @@
       </div>
       <nav class="sidebar-nav">
         <a href="dashboard.html" class="sidebar-link">
-          <i class="link-icon">◉</i> Dashboard
+          <i class="link-icon"><svg class="link-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 11v8M10 11v8M16 11v8M20 11v8M12 22v-3M4 11L12 3l8 8H4z" /></svg></i> Dashboard
         </a>
         <a href="absensi.html" class="sidebar-link">
-          <i class="link-icon">⬡</i> Absensi
+          <i class="link-icon"><svg class="link-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V6a2 2 0 0 1 2-2h2M4 16v2a2 2 0 0 0 2 2h2M16 4h2a2 2 0 0 1 2 2v2M16 20h2a2 2 0 0 0 2-2v-2" /><circle cx="12" cy="12" r="3" /></svg></i> Absensi
         </a>
         <a href="ai-assistant.html" class="sidebar-link">
-          <i class="link-icon">◈</i> AI Assistant
+          <i class="link-icon"><svg class="link-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M9 12h.01M15 12h.01M12 16c-1.5 0-3-1-3-2M15 8h-6" /></svg></i> AI Assistant
         </a>
         <a href="analytics.html" class="sidebar-link active">
-          <i class="link-icon">◐</i> Analytics
+          <i class="link-icon"><svg class="link-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-5 5" /><circle cx="18" cy="9" r="2" fill="currentColor"/></svg></i> Analytics
         </a>
         <a href="analytics.html#nilai" class="sidebar-link" id="nav-nilai">
-          <i class="link-icon">◑</i> Nilai & Transkrip
+          <i class="link-icon"><svg class="link-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></i> Nilai & Transkrip
         </a>
       </nav>
       <div class="sidebar-footer">
@@ -457,7 +457,7 @@
 
         <!-- IPK per Semester (Line) -->
         <div class="chart-card" id="chart-ipk">
-          <h3><span class="chart-icon">◉</span> IPK per Semester</h3>
+          <h3><span class="chart-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-5 5"/><circle cx="18" cy="9" r="2" fill="currentColor"/></svg></span> IPK per Semester</h3>
           <p class="chart-desc">Tren indeks prestasi kumulatif dari semester ke semester</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-ipk"></canvas>
@@ -466,7 +466,7 @@
 
         <!-- IPS per Semester (Grouped Bar) -->
         <div class="chart-card" id="chart-ips">
-          <h3><span class="chart-icon">◎</span> IPS per Semester</h3>
+          <h3><span class="chart-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></span> IPS per Semester</h3>
           <p class="chart-desc">Perbandingan IPS dan IPK tiap semester</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-ips"></canvas>
@@ -475,7 +475,7 @@
 
         <!-- Kehadiran per MK (Bar) -->
         <div class="chart-card" id="chart-kehadiran">
-          <h3><span class="chart-icon">⬡</span> Kehadiran per Mata Kuliah</h3>
+          <h3><span class="chart-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></span> Kehadiran per Mata Kuliah</h3>
           <p class="chart-desc">Total kehadiran setiap mata kuliah yang diikuti</p>
           <div class="chart-canvas-wrapper">
             <canvas id="canvas-kehadiran"></canvas>
@@ -484,7 +484,7 @@
 
         <!-- Persentase Kehadiran (Donut) -->
         <div class="chart-card" id="chart-gauge">
-          <h3><span class="chart-icon">◐</span> Persentase Kehadiran</h3>
+          <h3><span class="chart-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"/></svg></span> Persentase Kehadiran</h3>
           <p class="chart-desc">Target minimum kehadiran: 75%</p>
           <div class="gauge-wrapper">
             <canvas id="canvas-gauge" style="max-height: 220px;"></canvas>
@@ -497,7 +497,7 @@
 
         <!-- Heatmap Absensi (GitHub-style) -->
         <div class="chart-card full-width" id="chart-heatmap">
-          <h3><span class="chart-icon">☰</span> Heatmap Absensi</h3>
+          <h3><span class="chart-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span> Heatmap Absensi</h3>
           <p class="chart-desc">Kontribusi kehadiran sepanjang tahun — mirip GitHub contribution graph</p>
           <div class="heatmap-wrapper">
             <div class="heatmap-months" id="heatmap-months"></div>
@@ -516,7 +516,7 @@
 
         <!-- Alert < 75% -->
         <div class="chart-card full-width" id="chart-alerts">
-          <h3><span class="chart-icon">⚡</span> Status Kehadiran per MK</h3>
+          <h3><span class="chart-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg></span> Status Kehadiran per MK</h3>
           <p class="chart-desc">Mata kuliah dengan kehadiran di bawah 75% membutuhkan perhatian khusus</p>
           <div class="alert-list" id="alert-list">
             <div class="text-muted text-sm" style="padding: var(--space-lg); text-align: center;">Memuat data...</div>
@@ -527,8 +527,10 @@
 
       <!-- ══ GRADE / TRANSKRIP SECTION ══ -->
       <div id="nilai" style="scroll-margin-top: 80px;">
+        <div style="padding: 0 var(--space-xl) var(--space-lg); max-width: 1100px; margin: 0 auto; display:flex; align-items:center; gap:8px;">
+          <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--fg-primary); margin-bottom: var(--space-xs); display:flex; align-items:center; gap:8px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Nilai &amp; Transkrip</h2>
+        </div>
         <div style="padding: 0 var(--space-xl) var(--space-lg); max-width: 1100px; margin: 0 auto;">
-          <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--fg-primary); margin-bottom: var(--space-xs);">📋 Nilai &amp; Transkrip</h2>
           <p style="font-size: var(--text-sm); color: var(--fg-muted);">Rekap nilai seluruh mata kuliah yang telah ditempuh</p>
         </div>
 

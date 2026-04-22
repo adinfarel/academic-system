@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sandbox Features V8 — Scholaria</title>
+  
+  <style>
+    /* ================= BASE STYLES & MONOCHROME THEME ================= */
+    :root {
+      --space-2xl: 48px;
+      --fg-secondary: #5f6368;
+      --fg-primary: #111;
+      --bg-primary: #fafafa;
+    }
+    body {
+      background: var(--bg-primary);
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--fg-primary);
+      padding-bottom: 0px; 
+    }
+    .sandbox-header {
+      padding: 40px var(--space-2xl);
+      text-align: center;
+      background: #fff;
+      border-bottom: 1px solid #eaeaea;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 80px auto;
+      padding: 0 var(--space-2xl);
+    }
+    h2.section-title {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+    p.section-desc {
+      text-align: center;
+      color: var(--fg-secondary);
+      font-size: 1.1rem;
+      margin-bottom: 60px;
+      max-width: 650px;
+      margin-inline: auto;
+      line-height: 1.6;
+    }
+
+    /* ========================================================
+       1. SHOWCASE Z-PATTERN (SaaS Style)
+       ======================================================== */
+    .saas-row { display: flex; align-items: center; gap: 80px; margin-bottom: 150px; min-height: 400px; }
+    .saas-row.reverse { flex-direction: row-reverse; }
+    .saas-text { flex: 1; margin-right: 40px; }
+    .saas-row.reverse .saas-text { margin-right: 0; margin-left: 40px; }
+    
+    .saas-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #111; background: #eaeaea; padding: 6px 14px; border-radius: 20px; margin-bottom: 16px; }
+    .saas-text h3 { font-size: 2.4rem; font-family: 'Times New Roman', serif; margin: 0 0 20px 0; letter-spacing: -0.02em; line-height: 1.2; }
+    .saas-text p { font-size: 1.1rem; line-height: 1.7; color: var(--fg-secondary); }
+    .saas-visual { flex: 1.2; position: relative; }
+
+    /* V1: Macbook Face Scan */
+    .macbook-mockup { width: 100%; max-width: 550px; margin: 0 auto; background: #eaebec; border-radius: 12px 12px 0 0; border: 8px solid #c2c3c5; border-bottom-width: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.1); position: relative; display: flex; align-items: center; justify-content: center; height: 350px; overflow: hidden; }
+    .macbook-cam-dot { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #111;}
+    .mockup-scanline { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #4285F4; box-shadow: 0 0 15px #4285F4; animation: scanY 2.5s infinite linear; }
+    .mockup-face-box { width: 160px; height: 180px; border: 2px dashed #4285F4; border-radius: 12px; position: relative; animation: pulseBox 2s infinite ease-in-out; }
+    .mockup-face-box::after { content: 'Match: Budi (99.8%)'; position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); background: #4285F4; color:#fff; font-size:11px; padding: 4px 8px; border-radius:6px; white-space: nowrap; font-weight:bold; }
+
+    /* V2: Phone Chat */
+    .phone-mockup { width: 300px; height: 550px; margin: 0 auto; border-radius: 40px; border: 12px solid #111; background: #fff; position: relative; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.1), inset 0 0 0 2px #fff; display: flex; flex-direction: column; }
+    .phone-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 90px; height: 26px; background: #111; border-radius: 20px; z-index: 10;}
+    .chat-header { padding: 45px 20px 15px; border-bottom: 1px solid #eaeaea; display: flex; align-items: center; gap: 12px; background: #fcfcfc;}
+    .chat-body { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #f7f7f7; }
+    .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem; line-height: 1.4; opacity: 0; animation: fadeInUp 0.4s ease forwards; }
+    .chat-ai { align-self: flex-start; background: #eaebec; color: #111; border-bottom-left-radius: 4px; }
+    .chat-user { align-self: flex-end; background: #4285F4; color: #fff; border-bottom-right-radius: 4px; }
+    .chat-footer { padding: 15px; border-top: 1px solid #eaeaea; background: #fff; position: relative; }
+    .chat-input-fake { background: #f0f0f0; border-radius: 20px; padding: 12px 14px; color: #555; position: relative; font-size: 0.85rem; height: 18px;}
+    .typing-text-ph::after { content: '|'; animation: blink 1s infinite; font-weight:bold; color:#111;}
+
+    /* V3 & V4: Dashboard Windows with Video Placeholders */
+    .dashboard-window { background: #111; border-radius: 12px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.1); border: 1px solid #eaeaea; display: flex; flex-direction: column;}
+    .dash-win-head { height: 32px; background: #fdfdfd; border-bottom: 1px solid #eaeaea; display: flex; align-items: center; padding: 0 16px; gap: 8px;}
+    .dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dash-video-wrapper { flex: 1; background: #000; position: relative; aspect-ratio: 16/10;}
+    .dash-video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.8;}
+    .video-placeholder-text { position: absolute; inset: 0; display:flex; align-items:center; justify-content:center; color: #fff; font-family: monospace; font-size: 0.85rem; letter-spacing: 1px; z-index: 2; pointer-events:none;}
+
+
+    /* ========================================================
+       2. ASPIRASI MONOCHROME CLEAN (V8 - Persistent Interactive Canvas)
+       ======================================================== */
+    .aspirasi-wrapper {
+      margin-top: 100px; padding: 120px 0; background: #f8f9fa; border-top: 1px solid #ebebeb; position: relative;
+    }
+    
+    .clean-board-container {
+      display: grid; grid-template-columns: 380px 1fr; gap: 40px; height: 600px; position: relative; z-index: 2;
+    }
+
+    /* Kiri: Form Input Clean Minimalist */
+    .clean-form-card {
+      background: #fff; border: 1px solid #eaeaea; border-radius: 24px; padding: 40px 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.03); display: flex; flex-direction: column;
+    }
+    .form-title { font-size: 1.5rem; font-weight: 600; font-family: 'Times New Roman', serif; margin-bottom: 25px; color:#111; letter-spacing: -0.02em;}
+    .clean-group { margin-bottom: 20px; position: relative;}
+    .clean-label { font-size: 0.8rem; font-weight: 600; color: #777; margin-bottom: 8px; display: block; }
+    .clean-input { width: 100%; background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 12px 14px; color: #111; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: all 0.3s; }
+    .clean-input:focus { border-color: #111; outline: none; }
+    textarea.clean-input { resize: none; height: 90px; }
+    .name-row { display: flex; gap: 15px; align-items: center;}
+    .name-row .clean-input { flex: 1; }
+    .anon-toggle-lbl { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #555; cursor: pointer; user-select: none; }
+    .anon-check { appearance: none; width: 18px; height: 18px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; position: relative; transition: 0.2s;}
+    .anon-check:checked { background: #111; border-color: #111; }
+    .anon-check:checked::after { content:'✔'; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#fff; font-size:12px; }
+    .clean-toggles { display: flex; gap: 10px; background: #f0f0f0; padding: 4px; border-radius: 12px; }
+    .clean-toggle { flex: 1; text-align: center; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color:#555; transition: 0.3s; }
+    .clean-toggle.active { background: #fff; color: #111; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+    .clean-btn { background: #111; color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 600; cursor: pointer; font-size: 0.95rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-top: 10px; }
+    .clean-btn:hover { background: #333; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+    /* Kanan: Monochrome Node Canvas */
+    .spatial-canvas {
+      position: relative; border-radius: 24px; border: 1px solid #eaeaea; background: #fff; overflow: hidden;
+      background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+      background-size: 30px 30px; box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
+      width: 100%; height: 100%;
+    }
+    #connection-lines { position: absolute; inset: 0; pointer-events: none; z-index:1; }
+    .conn-line { fill: none; stroke: #ccc; stroke-width: 1.5; stroke-dasharray: 6 6; animation: dashMove 20s linear infinite; }
+
+    /* Interactive Clean White Cards (No blur cover, readable on hover) */
+    .node-card {
+      position: absolute; border-radius: 16px; font-size: 13px; line-height: 1.5; color: #111;
+      width: 250px; z-index:2; background: #fff;
+      border: 1px solid #eaeaea; box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.25, 1.5, 0.5, 1), box-shadow 0.3s;
+      opacity: 0; transform: scale(0.6) translateY(20px);
+      overflow: hidden; cursor: crosshair;
+    }
+    .node-card.visible { opacity: 1; transform: scale(1) translateY(0); }
+    .node-card:hover { z-index: 100 !important; cursor: default; border-color: #ccc; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transform: translateY(-5px) scale(1.02) !important;}
+    
+    .node-inner { padding: 16px; display: flex; gap: 14px; position: relative;}
+    .node-avatar { width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 14px; }
+    .node-card.theme-mhs .node-avatar { background: #111; }
+    .node-card.theme-dsn .node-avatar { background: #555; }
+    .node-content { flex: 1; min-width: 0;}
+    .node-author { font-size: 0.8rem; font-weight: 600; color: #777; margin-bottom: 4px; display: flex; justify-content: space-between;}
+    .node-text { margin-bottom: 12px; font-style: normal; font-size: 0.95rem; color: #111;}
+    .node-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;}
+    .nv-pill { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 6px; letter-spacing:0.02em; background: #f5f5f5; border: 1px solid #eaeaea; color:#555;}
+    
+    /* Stats Buttons Always Visible at the bottom */
+    .node-stats { margin-top: 10px; display: flex; gap: 12px; padding-top: 10px; border-top: 1px solid #f0f0f0; color: #777; font-size: 0.8rem; font-weight: 600;}
+    .stat-btn { display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s;}
+    .stat-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; transition: fill 0.2s;}
+    
+    /* Persistent Like State */
+    .stat-btn:hover { color: #111; }
+    .stat-btn:hover.stat-like svg { stroke: #ef4444; }
+    .stat-like.is-liked { color: #ef4444; }
+    .stat-like.is-liked svg { stroke: #ef4444; fill: #ef4444; }
+
+    .stat-reply:hover { color: #3b82f6;}
+    .stat-reply:hover svg { stroke: #3b82f6;}
+
+    #empty-state-canvas { position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#999; font-style:italic;}
+
+    /* ========================================================
+       3. TIKTOK/IG STYLE COMMENT MODAL
+       ======================================================== */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+    }
+    .modal-backdrop.show { display: flex; opacity: 1; }
+    
+    .comment-modal {
+      background: #fff; width: 100%; max-width: 450px; border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; max-height: 80vh;
+      transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .modal-backdrop.show .comment-modal { transform: translateY(0); }
+    
+    .cm-header {
+      padding: 16px 20px; border-bottom: 1px solid #eaeaea; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 1.1rem;
+    }
+    .cm-close { cursor: pointer; color: #999; transition: 0.2s; background: none; border:none; padding:4px;}
+    .cm-close:hover { color: #111;}
+    
+    .cm-body { flex: 1; overflow-y: auto; padding: 20px; background: #fdfdfd; display: flex; flex-direction: column; gap: 20px;}
+    
+    /* Original Post in Modal */
+    .cm-op { padding-bottom: 20px; border-bottom: 1px solid #eaeaea;}
+    .cm-op-author { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; display:flex; justify-content: space-between;}
+    .cm-op-text { font-size: 0.95rem; line-height: 1.5; color: #333;}
+    
+    /* Replies List */
+    .cm-replies-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #999; margin-bottom: 5px;}
+    .cm-reply-item { display: flex; gap: 12px; margin-bottom: 15px;}
+    .cm-ri-avatar { width: 28px; height: 28px; border-radius: 50%; background: #eaeaea; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:bold; color:#777;}
+    .cm-ri-content { flex: 1; font-size: 0.9rem; line-height: 1.4; color: #444;}
+    .cm-ri-author { font-weight: 600; color: #111; margin-right: 6px;}
+
+    .cm-footer {
+      padding: 15px 20px; border-top: 1px solid #eaeaea; background: #fff; display: flex; gap: 10px; align-items: center;
+    }
+    .cm-input { flex: 1; background: #f0f0f0; border: none; border-radius: 20px; padding: 12px 16px; font-size: 0.9rem; outline: none; transition: 0.2s;}
+    .cm-input:focus { background: #e8e8e8;}
+    .cm-send-btn { background: #111; color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink:0;}
+    .cm-send-btn:hover { background: #333; transform: scale(1.05);}
+    .cm-send-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;}
+
+    /* Animations */
+    @keyframes scanY { 0% { top: -10%; opacity: 0; } 10%, 90% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
+    @keyframes pulseBox { 0%, 100% { transform: scale(1); border-color:#4285F4; } 50% { transform: scale(1.05); border-color:#27c93f; } }
+    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes dashMove { to { stroke-dashoffset: -100; } }
+  </style>
+</head>
+<body>
+
+  <div class="sandbox-header">
+    <h1 style="margin:0; font-family:'Times New Roman', serif;">Antigravity Sandbox V8</h1>
+    <p style="color:var(--fg-secondary); margin:5px 0 0;">Strict Rotation Sync, Persistent Likes, & IG-Style Reply Modal</p>
+  </div>
+
+  <div class="container">
+    <!-- 1. MACBOOK: FACE SCANNING -->
+    <div class="saas-row">
+      <div class="saas-text">
+        <div class="saas-badge">Engine Biometrik</div>
+        <h3>Absensi Wajah Super Akurat. Dalam Hitungan Detik.</h3>
+        <p>Lupakan antrian memindai barcode. Sistem kami memetakan topologi wajah Anda hanya dalam 2 detik. Dibangun di atas model machine learning terkini dengan akurasi pengenalan mencapai 99.8% pada kondisi pencahayaan rendah.</p>
+      </div>
+      <div class="saas-visual">
+        <div class="macbook-mockup">
+          <div class="macbook-cam-dot"></div>
+          <div class="mockup-scanline"></div>
+          <div class="mockup-face-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PHONE: AI CHAT -->
+    <div class="saas-row reverse">
+      <div class="saas-text">
+        <div class="saas-badge">Asisten Kognitif Lokal</div>
+        <h3>Interaksi Bahasa Alami dengan Data Kampus Anda.</h3>
+        <p>Tidak ada panduan pengguna yang rumit. Tanyakan apapun secara langsung. AI RAG mandiri kami memprosesnya secara privat tanpa menyentuh server eksternal, memberikan jawaban cepat berbasis konteks.</p>
+      </div>
+      <div class="saas-visual">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="chat-header">
+            <div style="width:32px;height:32px;border-radius:50%;background:#4285F4;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;">AI</div>
+            <div>
+              <div style="font-weight:600; font-size:13px;">Scholaria Agent</div>
+              <div style="font-size:11px; color:#10b981; display:flex; gap:4px; align-items:center;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>Aktif</div>
+            </div>
+          </div>
+          <div class="chat-body" id="anim-chat-body"></div>
+          <div class="chat-footer">
+            <div class="chat-input-fake"><span id="anim-input-text"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. DASHBOARD MAHASISWA -->
+    <div class="saas-row">
+      <div class="saas-text">
+        <div class="saas-badge">Performa Analitik Mahasiswa</div>
+        <h3>Transparansi Kehadiran Secara Real-Time.</h3>
+        <p>Akses riwayat kehadiran, pantau kuota persentase absen, dan evaluasi performa akademik dengan UI grafis yang komprehensif tanpa menunggu akhir semester.</p>
+      </div>
+      <div class="saas-visual">
+        <div class="dashboard-window">
+          <div class="dash-win-head">
+            <div class="dash-dot" style="background:#ff5f56;"></div>
+            <div class="dash-dot" style="background:#ffbd2e;"></div>
+            <div class="dash-dot" style="background:#27c93f;"></div>
+          </div>
+          <div class="dash-video-wrapper">
+            <div class="video-placeholder-text">Video: dash_mahasiswa_demo.mp4</div>
+            <video src="../assets/videos/dash_mahasiswa_demo.mp4" autoplay loop muted playsinline></video>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. DASHBOARD DOSEN & ADMIN -->
+    <div class="saas-row reverse" style="margin-bottom: 0;">
+      <div class="saas-text">
+        <div class="saas-badge">Pusat Kendali Administrasi</div>
+        <h3>Bebaskan Waktu Dosen dari Birokrasi Kelas.</h3>
+        <p>Pantau seluruh kelas secara simultan, ubah status absensi secara manual, kelola daftar wajah biometrik, dan ekspor laporan rekapitulasi ke format BKD secara instan.</p>
+      </div>
+      <div class="saas-visual">
+        <div class="dashboard-window">
+          <div class="dash-win-head">
+            <div class="dash-dot" style="background:#ff5f56;"></div>
+            <div class="dash-dot" style="background:#ffbd2e;"></div>
+            <div class="dash-dot" style="background:#27c93f;"></div>
+          </div>
+          <div class="dash-video-wrapper">
+            <div class="video-placeholder-text">Video: dash_admin_demo.mp4</div>
+            <video src="../assets/videos/dash_admin_demo.mp4" autoplay loop muted playsinline></video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- V8 ASPIRASI (NO OVERLAP, STRICT ROTATION, MODAL LIST) -->
+  <div class="aspirasi-wrapper">
+    <div class="container" style="margin-top:0;">
+      <h2 class="section-title">Aspirasi Kampus</h2>
+      <p class="section-desc">Kumpulkan feedback nyata dari mahasiswa dan dosen yang diplot ke kanvas spasial interaktif. Desain bersih, monokrom, berpusat pada keterbacaan data.</p>
+
+      <div class="clean-board-container" id="board-ct">
+        <!-- KIRI: CLEAN FORM -->
+        <div class="clean-form-card">
+          <div class="form-title">Tinggalkan Jejak</div>
+          <form id="aspiration-form">
+            <div class="clean-group name-row">
+              <input type="text" id="ctx-nama" class="clean-input" placeholder="Nama Anda (Cth: Farel)" required>
+              <label class="anon-toggle-lbl"><input type="checkbox" id="anon_check" class="anon-check" onchange="toggleAnon()"> Anonim</label>
+            </div>
+            <div class="clean-group">
+              <label class="clean-label">Pilih Peran</label>
+              <div class="clean-toggles">
+                <div class="clean-toggle role-dsn active" onclick="setRole('Dosen', this)">Dosen</div>
+                <div class="clean-toggle role-mhs" onclick="setRole('Mahasiswa', this)">Mahasiswa</div>
+              </div>
+            </div>
+            <div class="clean-group">
+              <label class="clean-label">Topik Sorotan</label>
+              <select id="ctx-topik" class="clean-input" style="appearance:none; border-right:16px solid transparent;">
+                <option value="UI & UX">UI/UX & Desain</option>
+                <option value="Performa">Kecepatan Fitur</option>
+                <option value="Local AI">Bantuan Agent LLM</option>
+                <option value="Laporan">Evaluasi & Report</option>
+              </select>
+            </div>
+            <div class="clean-group">
+              <label class="clean-label">Masukan Anda</label>
+              <textarea id="ctx-komen" class="clean-input" placeholder="Tulis pendapat atau ide brilian Anda..." required></textarea>
+            </div>
+            <button type="submit" class="clean-btn">Unggah Ke Ruang Komentar</button>
+          </form>
+        </div>
+
+        <!-- KANAN: MONOCHROME SPATIAL CANVAS -->
+        <div class="spatial-canvas" id="canvas-area">
+          <svg id="connection-lines"></svg>
+          <div id="empty-state-canvas">Sedang memuat data...</div>
+          <div id="nodes-container" style="position:absolute; inset:0;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIKTOK/IG STYLE COMMENT MODAL -->
+  <div class="modal-backdrop" id="modal-backdrop" onclick="closeModal(event)">
+    <div class="comment-modal" onclick="event.stopPropagation()">
+      <div class="cm-header">
+        <span>Utas Balasan</span>
+        <button class="cm-close" onclick="closeModal(event)">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="cm-body" id="cm-body">
+        <!-- Original Post Populated dynamically -->
+      </div>
+      <form class="cm-footer" id="cm-form">
+        <input type="text" id="cm-input" class="cm-input" placeholder="Tambahkan balasan sebagai Anonim..." required autocomplete="off">
+        <button type="submit" class="cm-send-btn">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // 1. SEQUENCE LOGIC UNTUK BENTO AI CHAT
+    // ============================================
+    const chatBody = document.getElementById('anim-chat-body');
+    const inputFake = document.getElementById('anim-input-text');
+    const texts = ["Buatkan grafik kehadiran.", "Rekap absensi saya."];
+    let txtIdx = 0;
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    async function runPhoneLoop() {
+      const children = Array.from(chatBody.children);
+      for(let i=0; i<children.length; i++) chatBody.removeChild(children[i]);
+      inputFake.textContent = ""; inputFake.classList.add('typing-text-ph');
+      await sleep(1000);
+      let str = texts[txtIdx];
+      for(let i=0; i<str.length; i++) { inputFake.textContent += str[i]; await sleep(50); }
+      await sleep(1500); 
+      inputFake.textContent = ""; inputFake.classList.remove('typing-text-ph');
+      const userMsg = document.createElement('div'); userMsg.className = 'chat-bubble chat-user'; userMsg.textContent = str;
+      chatBody.appendChild(userMsg);
+      await sleep(800);
+      const aiReply = document.createElement('div'); aiReply.className = 'chat-bubble chat-ai';
+      aiReply.innerHTML = "Memproses permintaan... <br> ✅ Selesai.";
+      chatBody.appendChild(aiReply);
+      await sleep(3500);
+      txtIdx = (txtIdx + 1) % texts.length;
+      runPhoneLoop();
+    }
+    runPhoneLoop();
+
+    // ============================================
+    // 2. KAMPUS ASPIRASI - STRICT ROTATION & INTERACTIONS
+    // ============================================
+    let currentRole = "Dosen";
+    window.setRole = function(role, el) {
+      document.querySelectorAll('.clean-toggle').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+      currentRole = role;
+    }
+
+    const inpName = document.getElementById('ctx-nama');
+    window.toggleAnon = function() {
+      if(document.getElementById('anon_check').checked) {
+        inpName.value = "Anonim"; inpName.disabled = true; inpName.style.background = "#f5f5f5";
+      } else {
+        inpName.value = ""; inpName.disabled = false; inpName.style.background = "#fff";
+      }
+    }
+
+    const defaultData = [
+      { id: 101, author: "Prof. Budi", text: "Dashboard ini menghemat rekapitulasi absen saya.", role: "Dosen", tagLbl: "Laporan", likes: 112, likedByUser: false, replies: [{author:'Adin', text:'Setuju Prof!'}] },
+      { id: 102, author: "Anonim", text: "Absen pake biometrik seru abis, 3 detik kelar woi!", role: "Mahasiswa", tagLbl: "Performa", likes: 231, likedByUser: true, replies: [] },
+      { id: 103, author: "Dina T.", text: "UI-nya bersih, gampang dipahami.", role: "Mahasiswa", tagLbl: "UI & UX", likes: 78, likedByUser: false, replies: [] },
+      { id: 104, author: "Farel", text: "Tolong mode gelapnya ditambahin juga min.", role: "Mahasiswa", tagLbl: "UI & UX", likes: 45, likedByUser: false, replies: [] },
+      { id: 105, author: "Dr. Setiawan", text: "Bisa diakses dari Safari macbook tanpa bug.", role: "Dosen", tagLbl: "Performa", likes: 62, likedByUser: false, replies: [] },
+      { id: 106, author: "Anonim", text: "Rotasi komentarnya keren banget sumpah.", role: "Mahasiswa", tagLbl: "UI & UX", likes: 200, likedByUser: false, replies: [] }
+    ];
+
+    function getDB() {
+      const d = localStorage.getItem('scholaria_v8_db');
+      return d ? JSON.parse(d) : defaultData;
+    }
+    function saveDB(data) { localStorage.setItem('scholaria_v8_db', JSON.stringify(data)); }
+
+    // Interactivity Triggers
+    window.actionLike = function(e, id) {
+      e.stopPropagation(); // Prevent card clicks if any
+      const db = getDB();
+      const idx = db.findIndex(i => i.id == id);
+      if(idx > -1) {
+        const btn = document.getElementById(`btn-like-${id}`);
+        if(db[idx].likedByUser) {
+          db[idx].likes = Math.max(0, db[idx].likes - 1);
+          db[idx].likedByUser = false;
+          if(btn) btn.classList.remove('is-liked');
+        } else {
+          db[idx].likes += 1;
+          db[idx].likedByUser = true;
+          if(btn) btn.classList.add('is-liked');
+        }
+        saveDB(db);
+        const p = document.getElementById(`like-cnt-${id}`);
+        if(p) p.innerText = db[idx].likes;
+      }
+    };
+
+    // Modal Variables
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalBody = document.getElementById('cm-body');
+    let activeModalId = null;
+
+    window.actionReply = function(id) {
+      // Fetch fresh data
+      const db = getDB();
+      const item = db.find(i => i.id == id);
+      if(!item) return;
+      activeModalId = id;
+      
+      // Populate Modal
+      let html = `
+        <div class="cm-op">
+          <div class="cm-op-author">
+             <span>${item.author} <span style="font-weight:400; color:#888;">• ${item.role}</span></span>
+          </div>
+          <div class="cm-op-text">"${item.text}"</div>
+        </div>
+      `;
+      
+      const replies = item.replies || [];
+      if(replies.length > 0) {
+        html += `<div class="cm-replies-title">Balasan (${replies.length})</div>`;
+        replies.forEach(r => {
+          const init = r.author.substring(0,2).toUpperCase();
+          html += `
+            <div class="cm-reply-item">
+              <div class="cm-ri-avatar">${init}</div>
+              <div class="cm-ri-content"><span class="cm-ri-author">${r.author}</span>${r.text}</div>
+            </div>
+          `;
+        });
+      } else {
+        html += `<div style="text-align:center; color:#999; font-style:italic; font-size:0.9rem; padding: 20px 0;">Belum ada balasan. Jadilah yang pertama!</div>`;
+      }
+
+      modalBody.innerHTML = html;
+      modalBackdrop.classList.add('show');
+      document.getElementById('cm-input').focus();
+    };
+
+    window.closeModal = function(e) {
+      if(e.target.closest('.comment-modal') && !e.target.closest('.cm-close')) return; // Ignore clicks inside modal except close btn
+      modalBackdrop.classList.remove('show');
+      activeModalId = null;
+    }
+
+    // Handle Comment Submit in Modal
+    document.getElementById('cm-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if(!activeModalId) return;
+      
+      const inp = document.getElementById('cm-input');
+      const text = inp.value.trim();
+      if(!text) return;
+
+      const db = getDB();
+      const idx = db.findIndex(i => i.id == activeModalId);
+      if(idx > -1) {
+        if(!db[idx].replies) db[idx].replies = [];
+        db[idx].replies.push({ author: "Anonim B", text: text });
+        saveDB(db);
+        
+        // Update Modal view realtime
+        actionReply(activeModalId);
+        
+        // Update Canvas span
+        const repSpan = document.getElementById(`reply-cnt-${activeModalId}`);
+        if(repSpan) repSpan.innerText = db[idx].replies.length;
+        
+        inp.value = "";
+      }
+    });
+
+    let activeNodes = {}; 
+    let currentRotateIdx = 0; // Strict index for rotating queue
+
+    function getSectorCoord(sectorIdx) {
+      const row = Math.floor(sectorIdx / 3); 
+      const col = sectorIdx % 3; 
+      const topMin = row === 0 ? 5 : 45;
+      const topMax = row === 0 ? 30 : 65;
+      const leftMin = col === 0 ? 5 : (col === 1 ? 35 : 60);
+      const leftMax = col === 0 ? 20 : (col === 1 ? 50 : 60);
+      const t = Math.floor(Math.random() * (topMax - topMin)) + topMin;
+      const l = Math.floor(Math.random() * (leftMax - leftMin)) + leftMin;
+      return { top: t + '%', left: l + '%', sector: sectorIdx };
+    }
+
+    function spawnCoordsFor(arrLength, keepExistingNodes) {
+      const occupiedSectors = [];
+      Object.keys(keepExistingNodes).forEach(k => occupiedSectors.push(keepExistingNodes[k].sector));
+      const availableSectors = [0,1,2,3,4,5].filter(s => !occupiedSectors.includes(s));
+      availableSectors.sort(() => 0.5 - Math.random());
+      const newCoords = [];
+      for(let i=0; i<arrLength; i++) {
+        const sect = availableSectors[i % availableSectors.length]; 
+        newCoords.push(getSectorCoord(sect));
+        occupiedSectors.push(sect); 
+      }
+      return newCoords;
+    }
+
+    function drawSVGConnections(coords) {
+      const svg = document.getElementById('connection-lines');
+      svg.innerHTML = ''; 
+      if (coords.length < 2) return;
+      for(let i=0; i<coords.length-1; i++) {
+        const c1 = coords[i]; const c2 = coords[i+1];
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const x1 = parseFloat(c1.left) + 15; const y1 = parseFloat(c1.top) + 10;
+        const x2 = parseFloat(c2.left) + 15; const y2 = parseFloat(c2.top) + 10;
+        const cx = (x1 + x2) / 2 + (Math.random() * 10 - 5); 
+        const cy = (y1 + y2) / 2 - 10; 
+        path.setAttribute('d', `M ${x1}% ${y1}% Q ${cx}% ${cy}% ${x2}% ${y2}%`);
+        path.setAttribute('class', 'conn-line');
+        svg.appendChild(path);
+      }
+    }
+
+    function renderBoard(forceNewSpawn = false) {
+      // Pause rotation logic if user is interacting with modal OR mouse is inside the board
+      if(!forceNewSpawn) {
+         if(activeModalId !== null) return; 
+         if(document.querySelector('.clean-board-container:hover')) return; // slight hack to wait
+      }
+
+      const db = getDB();
+      const container = document.getElementById('nodes-container');
+      const emptyState = document.getElementById('empty-state-canvas');
+      
+      if(db.length === 0) {
+        emptyState.style.display = 'flex'; container.innerHTML = ''; drawSVGConnections([]); return;
+      }
+      emptyState.style.display = 'none';
+
+      // STRICT ROTATION ALGORITHM
+      const sortedDb = [...db].sort((a,b) => b.likes - a.likes);
+      let toShow = [];
+      
+      if(db.length <= 5) {
+        toShow = sortedDb;
+        if(!forceNewSpawn && Object.keys(activeNodes).length === db.length) return;
+      } else {
+        const top3 = sortedDb.slice(0, 3);
+        const theRest = sortedDb.slice(3);
+        
+        if (currentRotateIdx >= theRest.length) currentRotateIdx = 0;
+        
+        let selectedRest = [theRest[currentRotateIdx]];
+        if(theRest.length > 1) {
+            let nextIdx = (currentRotateIdx + 1) % theRest.length;
+            selectedRest.push(theRest[nextIdx]);
+            currentRotateIdx = (currentRotateIdx + 2) % theRest.length; // Advance strict pointer
+        } else {
+            // Only 1 item in theRest
+            currentRotateIdx = 0;
+        }
+        
+        toShow = [...top3, ...selectedRest];
+      }
+
+      const showIds = toShow.map(i => String(i.id));
+
+      const remainingNodes = {};
+      Object.keys(activeNodes).forEach(idKey => {
+        if(!showIds.includes(idKey)) {
+          const el = activeNodes[idKey].el;
+          el.classList.remove('visible');
+          setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 600); 
+        } else {
+          remainingNodes[idKey] = activeNodes[idKey];
+        }
+      });
+      activeNodes = remainingNodes;
+
+      const newItems = toShow.filter(i => !activeNodes[String(i.id)]);
+      const coordsForNew = spawnCoordsFor(newItems.length, activeNodes);
+      
+      let renderedCoords = [];
+      
+      toShow.forEach(item => {
+        const idKey = String(item.id);
+        const likesCls = item.likedByUser ? "is-liked" : "";
+        const repCount = item.replies ? item.replies.length : 0;
+        
+        if (activeNodes[idKey]) {
+          renderedCoords.push(activeNodes[idKey]); 
+        } else {
+          const c = coordsForNew.shift();
+          renderedCoords.push(c);
+
+          const card = document.createElement('div');
+          const themeClass = item.role === 'Dosen' ? 'theme-dsn' : 'theme-mhs';
+          card.className = `node-card ${themeClass}`;
+          card.style.top = c.top; card.style.left = c.left;
+          
+          const initStr = (item.author || "An").substring(0, 2).toUpperCase();
+
+          card.innerHTML = `
+            <div class="node-inner">
+              <div class="node-avatar">${initStr}</div>
+              <div class="node-content">
+                <div class="node-author"><span>${item.author}</span><span style="font-weight:400; color:#aaa;">${item.role}</span></div>
+                <div class="node-text">"${item.text}"</div>
+                <div class="node-pills"><span class="nv-pill">${item.tagLbl}</span></div>
+                <!-- Inline Stats (Always visible, Red if liked) -->
+                <div class="node-stats">
+                  <div class="stat-btn stat-like ${likesCls}" id="btn-like-${item.id}" onclick="actionLike(event, ${item.id})">
+                    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span id="like-cnt-${item.id}">${item.likes}</span>
+                  </div>
+                  <div class="stat-btn stat-reply" onclick="actionReply(${item.id})">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    <span id="reply-cnt-${item.id}">${repCount}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+          
+          activeNodes[idKey] = { el: card, top: c.top, left: c.left, sector: c.sector };
+          requestAnimationFrame(() => requestAnimationFrame(() => { card.classList.add('visible'); }));
+        }
+      });
+      drawSVGConnections(renderedCoords);
+    }
+
+    document.getElementById('aspiration-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nama = document.getElementById('ctx-nama').value.trim();
+      const txt = document.getElementById('ctx-komen').value.trim();
+      if(!txt || !nama) return;
+      const tSel = document.getElementById('ctx-topik');
+      const authorName = document.getElementById('anon_check').checked ? "Anonim" : nama;
+      
+      const db = getDB();
+      db.push({
+        id: Date.now(),
+        author: authorName,
+        text: txt,
+        role: currentRole,
+        tagLbl: tSel.value,
+        likes: 0,
+        likedByUser: false,
+        replies: []
+      });
+      saveDB(db);
+      
+      document.getElementById('ctx-komen').value = "";
+      renderBoard(true); 
+      
+      const btn = this.querySelector('button');
+      const origin = btn.innerHTML;
+      btn.innerHTML = `✔ Terkirim`;
+      setTimeout(() => btn.innerHTML = origin, 2000);
+    });
+
+    if(!localStorage.getItem('scholaria_v8_db')) saveDB(defaultData);
+    renderBoard(true);
+    
+    // Interval adjusted to 3 seconds ("buat 2-3 detik aja perpidahan komennya")
+    setInterval(() => { renderBoard(false); }, 3000);
+
+  </script>
+
+</body>
+</html>

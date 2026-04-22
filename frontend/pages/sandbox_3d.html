@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sandbox 3D Scroll-Triggered — PolsriEduAI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, html {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ── 3D Canvas (fixed behind everything) ── */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      display: block;
+      background: #050508;
+    }
+
+    /* ── Loading Overlay ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #050508;
+      gap: 18px;
+      transition: opacity 0.6s ease;
+    }
+    #loader.hide { opacity: 0; pointer-events: none; }
+    #loader h2 { font-weight: 500; font-size: 1.1rem; letter-spacing: 0.05em; color: #ccc; }
+    #loader .bar-track {
+      width: 280px; height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    #loader .bar-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #E85A3A, #ff9a44);
+      border-radius: 4px;
+      transition: width 0.15s linear;
+    }
+    #loader #pct { font-size: 0.85rem; color: #888; font-variant-numeric: tabular-nums; }
+
+    /* ── Scroll Sections ── */
+    .section {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      text-align: center;
+      pointer-events: none;
+    }
+    .section h1 {
+      font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.85);
+    }
+    .section p {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      max-width: 640px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.7);
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    }
+
+    /* Extra scroll space between sections */
+    .spacer { height: 60vh; position: relative; z-index: 1; }
+
+    /* ── Debug Panel ── */
+    #debug-ui {
+      position: fixed;
+      top: 14px; right: 14px;
+      background: rgba(8,8,16,0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(232,90,58,0.4);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      z-index: 50000;
+      min-width: 260px;
+      color: #ddd;
+      pointer-events: auto;
+    }
+    #debug-ui h3 { margin: 0 0 8px; color: #E85A3A; font-size: 0.9rem; }
+    #debug-ui .row { display: flex; justify-content: space-between; padding: 3px 0; }
+    #debug-ui .label { color: #888; }
+    #debug-ui .val { color: #fff; }
+    #debug-ui hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0; }
+    #debug-ui .hint { color: #666; font-size: 0.7rem; line-height: 1.4; margin-top: 6px; }
+
+    /* ── Mode Toggle ── */
+    #mode-toggle {
+      position: fixed;
+      bottom: 20px; right: 20px;
+      z-index: 50000;
+      display: flex; gap: 8px;
+      pointer-events: auto;
+    }
+    #mode-toggle button {
+      background: rgba(8,8,16,0.85);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+      backdrop-filter: blur(10px);
+    }
+    #mode-toggle button:hover { background: rgba(232,90,58,0.25); border-color: #E85A3A; }
+    #mode-toggle button.active { background: #E85A3A; border-color: #E85A3A; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loader">
+    <h2>Loading 3D Environment…</h2>
+    <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
+    <span id="pct">0 %</span>
+  </div>
+
+  <!-- 3D Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Scroll Content -->
+  <div class="section" id="hero">
+    <h1>01 — HERO</h1>
+    <p>Kamera mulai dari posisi overview di luar aula. Scroll ke bawah untuk mulai masuk ke dalam.</p>
+  </div>
+  <div class="spacer"></div>
+
+  <div class="section" id="roles">
+    <h1>02 — ROLES</h1>
+    <p>Kamera zoom-in perlahan seiring scroll. Model mulai terlihat detail arsitekturnya.</p>
+  </div>
+  <div class="spacer"></div>
+
+  <div class="section" id="features">
+    <h1>03 — FEATURES</h1>
+    <p>Posisi kamera sudah di dalam ruangan, memperlihatkan interior The King's Hall.</p>
+  </div>
+  <div class="spacer"></div>
+
+  <div class="section" id="docs">
+    <h1>04 — DOKUMENTASI</h1>
+    <p>Pemberhentian terakhir — kamera di angle dramatis menjelang footer.</p>
+  </div>
+  <div class="spacer" style="height:30vh;"></div>
+
+  <!-- Debug Panel -->
+  <div id="debug-ui">
+    <h3>📐 Camera Debug</h3>
+    <div class="row"><span class="label">Pos X</span><span class="val" id="d-px">0</span></div>
+    <div class="row"><span class="label">Pos Y</span><span class="val" id="d-py">0</span></div>
+    <div class="row"><span class="label">Pos Z</span><span class="val" id="d-pz">0</span></div>
+    <hr>
+    <div class="row"><span class="label">Rot X</span><span class="val" id="d-rx">0</span></div>
+    <div class="row"><span class="label">Rot Y</span><span class="val" id="d-ry">0</span></div>
+    <div class="row"><span class="label">Rot Z</span><span class="val" id="d-rz">0</span></div>
+    <hr>
+    <div class="row"><span class="label">Target</span><span class="val" id="d-tg">0, 0, 0</span></div>
+    <div class="row"><span class="label">Scroll %</span><span class="val" id="d-sp">0</span></div>
+    <hr>
+    <div class="hint">
+      🔵 EXPLORE mode → Bebas terbang pakai mouse<br>
+      🟠 SCROLL mode → Kamera dikontrol oleh scroll<br>
+      Kiri‑klik = Putar · Kanan = Pan · Scroll = Zoom
+    </div>
+  </div>
+
+  <!-- Mode Toggle Buttons -->
+  <div id="mode-toggle">
+    <button id="btn-explore" class="active">🔵 Explore</button>
+    <button id="btn-scroll">🟠 Scroll Mode</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!--  LIBRARIES — loaded as classic scripts (global) -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- Three.js r128 Core -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <!-- OrbitControls (needs THREE global) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- GLTFLoader (needs THREE global) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- DRACOLoader in case the GLB uses Draco compression -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!--  MAIN SCRIPT                                    -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <script>
+    // ── Globals ──
+    let currentMode = 'explore'; // 'explore' | 'scroll'
+    let model = null;
+    let scrollTimeline = null;
+
+    // ── Renderer ──
+    const canvas = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // ── Scene ──
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050508);
+
+    // ── Lights ──
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+
+    const hemisphereLight = new THREE.HemisphereLight(0xffeedd, 0x080820, 0.6);
+    scene.add(hemisphereLight);
+
+    const dirLight = new THREE.DirectionalLight(0xfff4e0, 1.5);
+    dirLight.position.set(5, 15, 5);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.4);
+    fillLight.position.set(-5, 5, -5);
+    scene.add(fillLight);
+
+    // ── Camera (start at HERO position) ──
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.001, 2000);
+    camera.position.set(-4.280, -0.208, 0.926);
+
+    // ── OrbitControls ──
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 0.001; // Allow very close zoom for interior views
+    controls.target.set(0.0, -0.2, 0.8);
+    controls.update();
+
+    // ── Debug Cube (visible before model loads) ──
+    const debugGeo = new THREE.BoxGeometry(2, 2, 2);
+    const debugMat = new THREE.MeshStandardMaterial({
+      color: 0xE85A3A,
+      wireframe: true,
+      emissive: 0xE85A3A,
+      emissiveIntensity: 0.4
+    });
+    const debugCube = new THREE.Mesh(debugGeo, debugMat);
+    debugCube.position.set(0, 1, 0);
+    scene.add(debugCube);
+
+    // ── GLTFLoader + DRACOLoader ──
+    const dracoLoader = new THREE.DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+
+    const gltfLoader = new THREE.GLTFLoader();
+    gltfLoader.setDRACOLoader(dracoLoader);
+
+    const modelPath = '../assets/animations/the_king_s_hall.glb';
+    console.log('[Sandbox3D] Loading model:', modelPath);
+
+    gltfLoader.load(
+      modelPath,
+      // ── onLoad ──
+      (gltf) => {
+        console.log('[Sandbox3D] ✅ Model loaded successfully!');
+        console.log('[Sandbox3D] GLB cameras:', gltf.cameras);
+        console.log('[Sandbox3D] GLB animations:', gltf.animations);
+        console.log('[Sandbox3D] Scene children:', gltf.scene.children.length);
+
+        model = gltf.scene;
+
+        // Traverse and enable shadows + fix materials
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            // Fix metalness for brighter appearance
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                child.material.forEach(m => { m.metalness = Math.min(m.metalness, 0.5); });
+              } else {
+                child.material.metalness = Math.min(child.material.metalness, 0.5);
+              }
+            }
+          }
+        });
+
+        // Auto-center model
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        console.log('[Sandbox3D] Model center:', center);
+        console.log('[Sandbox3D] Model size:', size);
+
+        model.position.sub(center); // center at origin
+        scene.add(model);
+
+        // Remove debug cube
+        scene.remove(debugCube);
+
+        // Position camera at HERO view (user-calibrated coordinates)
+        camera.position.set(-4.280, -0.208, 0.926);
+        controls.target.set(0.0, -0.2, 0.8);
+        controls.update();
+
+        // Hide loader
+        const loaderEl = document.getElementById('loader');
+        loaderEl.classList.add('hide');
+        setTimeout(() => { loaderEl.style.display = 'none'; }, 700);
+
+        // Setup scroll animation (but only activate in scroll mode)
+        setupScrollAnimation(size);
+      },
+      // ── onProgress ──
+      (xhr) => {
+        const barFill = document.getElementById('bar-fill');
+        const pct = document.getElementById('pct');
+        if (xhr.lengthComputable && xhr.total > 0) {
+          const percent = Math.round((xhr.loaded / xhr.total) * 100);
+          barFill.style.width = percent + '%';
+          pct.textContent = percent + ' %';
+        } else {
+          const mb = (xhr.loaded / (1024 * 1024)).toFixed(1);
+          pct.textContent = mb + ' MB loaded…';
+          barFill.style.width = '50%';
+        }
+      },
+      // ── onError ──
+      (err) => {
+        console.error('[Sandbox3D] ❌ GLTFLoader error:', err);
+        const loaderEl = document.getElementById('loader');
+        loaderEl.innerHTML = `
+          <h2 style="color:#ff4444;">❌ Failed to load 3D model</h2>
+          <p style="color:#999; max-width:400px; text-align:center; line-height:1.6;">
+            File: ${modelPath}<br>
+            Error: ${err.message || err}<br><br>
+            Pastikan file .glb ada di folder <code>assets/animations/</code>
+            dan serve page ini lewat HTTP server (bukan file://)
+          </p>
+        `;
+      }
+    );
+
+    // ═══════════════════════════════════════════════
+    //  SCROLL-TRIGGERED CAMERA ANIMATION (GSAP)
+    //  Coordinates calibrated by user in Explore mode
+    // ═══════════════════════════════════════════════
+    function setupScrollAnimation(modelSize) {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // ── User-calibrated camera keyframes ──
+      const keyframes = [
+        { // 01 — HERO: wide room overview, looking down the hall
+          px: -4.280, py: -0.208, pz: 0.926,
+          tx: 0.0,    ty: -0.2,   tz: 0.8
+        },
+        { // 02 — ROLES: rotated angle, showing hall from side
+          px: 1.859,  py: 0.161,  pz: 4.702,
+          tx: -2.1,   ty: -0.4,   tz: 2.8
+        },
+        { // 03 — FEATURES: ultra close-up, inside detail
+          px: 0.004,  py: 0.001,  pz: 0.010,
+          tx: 0.0,    ty: 0.0,    tz: 0.0
+        },
+        { // 04 — DOCS: opposite angle close-up
+          px: -0.007, py: 0.001,  pz: 0.006,
+          tx: 0.0,    ty: 0.0,    tz: 0.0
+        }
+      ];
+
+      console.log('[Sandbox3D] Scroll keyframes:', keyframes);
+
+      // Build a GSAP timeline scrubbed by scroll
+      scrollTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          endTrigger: '#docs',
+          end: 'bottom bottom',
+          scrub: 1.5,        // smooth scrub
+          markers: false,
+          onUpdate: (self) => {
+            const sp = document.getElementById('d-sp');
+            if (sp) sp.textContent = (self.progress * 100).toFixed(1) + '%';
+          }
+        },
+        paused: currentMode !== 'scroll'
+      });
+
+      // Animate camera position through each keyframe
+      for (let i = 1; i < keyframes.length; i++) {
+        const kf = keyframes[i];
+        const dur = 1; // relative duration per segment
+
+        scrollTimeline.to(camera.position, {
+          x: kf.px, y: kf.py, z: kf.pz,
+          duration: dur,
+          ease: 'power1.inOut'
+        }, (i - 1) * dur);
+
+        scrollTimeline.to(controls.target, {
+          x: kf.tx, y: kf.ty, z: kf.tz,
+          duration: dur,
+          ease: 'power1.inOut',
+          onUpdate: () => controls.update()
+        }, (i - 1) * dur);
+      }
+
+      // If starting in scroll mode, enable it
+      if (currentMode === 'scroll') {
+        enableScrollMode();
+      }
+    }
+
+    // ═══════════════════════════════════════════════
+    //  MODE SWITCHING
+    // ═══════════════════════════════════════════════
+    const btnExplore = document.getElementById('btn-explore');
+    const btnScroll  = document.getElementById('btn-scroll');
+
+    btnExplore.addEventListener('click', () => {
+      currentMode = 'explore';
+      btnExplore.classList.add('active');
+      btnScroll.classList.remove('active');
+      enableExploreMode();
+    });
+
+    btnScroll.addEventListener('click', () => {
+      currentMode = 'scroll';
+      btnScroll.classList.add('active');
+      btnExplore.classList.remove('active');
+      enableScrollMode();
+    });
+
+    function enableExploreMode() {
+      controls.enabled = true;
+      canvas.style.pointerEvents = 'auto';
+      // Kill scroll trigger so GSAP doesn't fight with OrbitControls
+      if (scrollTimeline && scrollTimeline.scrollTrigger) {
+        scrollTimeline.scrollTrigger.disable();
+      }
+    }
+
+    function enableScrollMode() {
+      controls.enabled = false;
+      canvas.style.pointerEvents = 'none';
+      if (scrollTimeline && scrollTimeline.scrollTrigger) {
+        scrollTimeline.scrollTrigger.enable();
+        scrollTimeline.scrollTrigger.refresh();
+      }
+    }
+
+    // Start in explore mode
+    enableExploreMode();
+
+    // ═══════════════════════════════════════════════
+    //  RENDER LOOP
+    // ═══════════════════════════════════════════════
+    const debugEls = {
+      px: document.getElementById('d-px'),
+      py: document.getElementById('d-py'),
+      pz: document.getElementById('d-pz'),
+      rx: document.getElementById('d-rx'),
+      ry: document.getElementById('d-ry'),
+      rz: document.getElementById('d-rz'),
+      tg: document.getElementById('d-tg'),
+    };
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Spin debug cube if it's still in the scene
+      if (debugCube.parent) {
+        debugCube.rotation.x += 0.01;
+        debugCube.rotation.y += 0.015;
+      }
+
+      if (currentMode === 'explore') {
+        controls.update();
+      }
+
+      // Update debug panel
+      debugEls.px.textContent = camera.position.x.toFixed(3);
+      debugEls.py.textContent = camera.position.y.toFixed(3);
+      debugEls.pz.textContent = camera.position.z.toFixed(3);
+      debugEls.rx.textContent = camera.rotation.x.toFixed(3);
+      debugEls.ry.textContent = camera.rotation.y.toFixed(3);
+      debugEls.rz.textContent = camera.rotation.z.toFixed(3);
+      debugEls.tg.textContent = `${controls.target.x.toFixed(1)}, ${controls.target.y.toFixed(1)}, ${controls.target.z.toFixed(1)}`;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // ── Resize handler ──
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    console.log('[Sandbox3D] ✅ Initialized. Mode:', currentMode);
+  </script>
+</body>
+</html>

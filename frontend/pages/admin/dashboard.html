@@ -349,6 +349,7 @@
           <div class="panel-header-left"><span class="icon">◎</span>
             <h3>Data Dosen</h3>
           </div>
+          <button class="btn btn-sm btn-primary" onclick="openImportModal()"><span style="margin-right:0.5rem">↑</span> Import CSV</button>
         </div>
         <div class="table-wrapper">
           <table class="table">
@@ -400,6 +401,25 @@
       </div>
 
     </main>
+  </div>
+
+  <!-- ══ IMPORT MODAL ══ -->
+  <div class="modal-overlay" id="modal-import">
+    <div class="modal" style="max-width:440px;">
+      <div class="modal-header">
+        <h3>Import Data Dosen</h3>
+        <button class="modal-close" onclick="closeImportModal()">✕</button>
+      </div>
+      <p class="text-sm text-secondary mb-lg">Upload file CSV dengan format: <code>nidn, full_name, email, study_program, major, position(opsional)</code></p>
+      <div class="form-group">
+        <label class="form-label" for="import-file">Pilih File CSV</label>
+        <input type="file" id="import-file" class="form-input" accept=".csv">
+      </div>
+      <div style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);">
+        <button class="btn btn-primary" id="btn-confirm-import">Upload & Proses</button>
+        <button class="btn" onclick="closeImportModal()">Batal</button>
+      </div>
+    </div>
   </div>
 
   <!-- ══ DETAIL MODAL ══ -->
@@ -488,6 +508,8 @@
 
     function openStudentModal() { document.getElementById('modal-student').classList.add('active'); }
     function closeStudentModal() { document.getElementById('modal-student').classList.remove('active'); }
+    function openImportModal() { document.getElementById('import-file').value = ''; document.getElementById('modal-import').classList.add('active'); }
+    function closeImportModal() { document.getElementById('modal-import').classList.remove('active'); }
     function openEditModal() { document.getElementById('modal-edit').classList.add('active'); }
     function closeEditModal() { document.getElementById('modal-edit').classList.remove('active'); }
     function openRejectModal() { document.getElementById('modal-reject').classList.add('active'); }
@@ -692,6 +714,36 @@
       }, 400));
 
       loadStudents(0);
+
+      // ══ IMPORT DOSEN ══
+      document.getElementById('btn-confirm-import').addEventListener('click', async () => {
+        const fileInput = document.getElementById('import-file');
+        if (!fileInput.files.length) { showToast('Pilih file CSV terlebih dahulu', 'warning'); return; }
+        
+        const btn = document.getElementById('btn-confirm-import');
+        btn.disabled = true; btn.textContent = 'Mengupload...';
+        
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        
+        try {
+          const result = await apiFormData('/api/v1/bulk/lecturer', formData);
+          
+          if (result.errors && result.errors.length > 0) {
+            showToast(`Import selesai: ${result.success} sukses, ${result.failed} gagal. Periksa console log untuk detail.`, 'warning');
+            console.warn('Import errors:', result.errors);
+          } else {
+            showToast(`Berhasil import ${result.success} dosen.`, 'success');
+          }
+          
+          closeImportModal();
+          loadLecturers();
+        } catch (error) {
+          showToast(error.message || 'Terjadi kesalahan saat import data.', 'error');
+        } finally {
+          btn.disabled = false; btn.textContent = 'Upload & Proses';
+        }
+      });
 
       // ══ LECTURERS ══
       async function loadLecturers() {

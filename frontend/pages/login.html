@@ -12,73 +12,56 @@
 
   <style>
     .login-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 100vh;
-    }
-
-    @media (max-width: 768px) {
-      .login-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .login-visual {
-        display: none;
-      }
-    }
-
-    /* Left: particle visual with letter shape */
-    .login-visual {
       position: relative;
-      overflow: hidden;
-      background: var(--bg-secondary);
+      min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      border-right: 1px solid var(--border-color);
+      justify-content: flex-end; /* Form di sisi kanan */
+      overflow: hidden;
+      background: #fafafa;
     }
 
-    .login-visual canvas {
+    #login-particles {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      z-index: 1; /* Di bawah form */
     }
 
-    .login-visual .visual-text {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-    }
-
-    .login-visual .visual-brand {
-      font-size: var(--text-xs);
-      color: var(--fg-muted);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    /* Right: form */
     .login-form-side {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: var(--space-2xl);
       position: relative;
+      z-index: 2; /* Di atas canvas */
+      width: 100%;
+      max-width: 50vw; /* Mengambil setengah layar kanan */
+      /* Seamless integration — no background/borders */
+      background: transparent;
+    }
+
+    @media (max-width: 768px) {
+      .login-form-side {
+        max-width: 100%;
+        background: rgba(255, 255, 255, 0.85);
+      }
     }
 
     .login-form-box {
       width: 100%;
-      max-width: 380px;
+      max-width: 420px;
     }
 
     .login-type-title {
+      font-family: 'Times New Roman', Times, serif;
       font-size: var(--text-3xl);
-      font-weight: 600;
-      letter-spacing: -0.03em;
+      font-weight: normal;
+      letter-spacing: -0.02em;
       margin-bottom: var(--space-xs);
       min-height: 1.2em;
+      white-space: nowrap;
     }
 
     .login-type-cursor {
@@ -159,21 +142,57 @@
     .login-footer.show {
       opacity: 1;
     }
+
+    /* ── Password Toggle Eye ── */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper .form-input {
+      padding-right: 44px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--fg-muted);
+      font-size: 18px;
+      line-height: 1;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .password-toggle:hover {
+      color: var(--fg-primary);
+    }
+
+    .password-toggle svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
   </style>
 </head>
 
 <body>
 
   <div class="login-layout">
-    <!-- Left: Visual with particle letter -->
-    <div class="login-visual">
-      <canvas id="login-particles"></canvas>
-      <div class="visual-text">
-        <span class="visual-brand">Scholaria</span>
-      </div>
-    </div>
+    <!-- Canvas utuh sebagai background -->
+    <canvas id="login-particles"></canvas>
 
-    <!-- Right: Form -->
+    <!-- Right: Form panel -->
     <div class="login-form-side">
       <a href="index.html" class="login-back">← Kembali</a>
 
@@ -194,8 +213,20 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="password">Password</label>
-              <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password"
-                required autocomplete="current-password">
+              <div class="password-wrapper">
+                <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password"
+                  required autocomplete="current-password">
+                <button type="button" class="password-toggle" id="toggle-password" aria-label="Tampilkan password">
+                  <svg id="eye-open" viewBox="0 0 24 24">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg id="eye-closed" viewBox="0 0 24 24" style="display:none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             <button type="submit" class="btn btn-primary w-full btn-lg" id="login-btn">Masuk</button>
           </form>
@@ -211,7 +242,7 @@
     </div>
   </div>
 
-  <script src="../assets/js/particles.js"></script>
+  <script src="../assets/js/particles-login.js"></script>
   <script src="../assets/js/utils.js"></script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/auth.js"></script>
@@ -223,28 +254,26 @@
         return;
       }
 
-      // Particles — gravity attract like Antigravity
-      initParticles('login-particles', {
-        count: 400,
-        size: 1.5,
-        speed: 0.02,
-        shape: 'circles-double',
-        shapeScale: 0.38,
-        mouseRadius: 200,
-        mouseRepelForce: 0.06,
-        mouseMode: 'attract',
-        colors: [
-          'rgba(66, 133, 244, 0.6)',
-          'rgba(234, 67, 53, 0.4)',
-          'rgba(251, 188, 4, 0.4)',
-          'rgba(52, 168, 83, 0.4)',
-          'rgba(103, 58, 183, 0.3)',
-        ],
-        returnSpeed: 0.02,
+      // Particles — Antigravity Text
+      new AntigravityText('login-particles', {
+        text: 'Scholaria',
+        colors: ['#000000', '#111111', '#1a1a1a', '#222222'],
+        particleSize: 2.2,
+        textGap: 7, 
+        fontSize: 200, // Maximum size on large monitors
+        offsetXPercent: 0.04, // 4% off the left edge (Responsive)
+        returnSpeed: 0.01
       });
 
-      // Typing
-      const phrase = "Selamat Datang";
+      // ── Determine role from URL query ──
+      const urlParams = new URLSearchParams(window.location.search);
+      const role = urlParams.get('role'); // 'mahasiswa' | 'dosen' | null
+
+      // Typing title based on role
+      let phrase = "Selamat Datang";
+      if (role === 'mahasiswa') phrase = "Selamat Datang Mahasiswa";
+      else if (role === 'dosen') phrase = "Selamat Datang Dosen";
+
       const target = document.getElementById('login-type-target');
       const cursor = document.getElementById('login-cursor');
       let i = 0;
@@ -263,13 +292,31 @@
         cursor.classList.add('done');
         setTimeout(() => document.getElementById('login-subtitle').classList.add('show'), 100);
         setTimeout(() => document.getElementById('login-form-group').classList.add('show'), 300);
-        setTimeout(() => document.getElementById('login-footer').classList.add('show'), 500);
+
+        // Dosen: sembunyikan link daftar. Hanya mahasiswa yang boleh daftar.
+        if (role !== 'dosen') {
+          setTimeout(() => document.getElementById('login-footer').classList.add('show'), 500);
+        }
+
         setTimeout(() => document.getElementById('username').focus(), 600);
       }
 
       setTimeout(typeChar, 400);
 
-      // Login form
+      // ── Password Visibility Toggle ──
+      const toggleBtn = document.getElementById('toggle-password');
+      const passwordInput = document.getElementById('password');
+      const eyeOpen = document.getElementById('eye-open');
+      const eyeClosed = document.getElementById('eye-closed');
+
+      toggleBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        eyeOpen.style.display = isPassword ? 'none' : 'block';
+        eyeClosed.style.display = isPassword ? 'block' : 'none';
+      });
+
+      // ── Login form ──
       const form = document.getElementById('login-form');
       const errorEl = document.getElementById('login-error');
       const loginBtn = document.getElementById('login-btn');

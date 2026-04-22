@@ -3,6 +3,14 @@
    PolsriEduAI — Futuristic B&W
    ============================================================ */
 
+/* ── Sidebar SVG Icons ────────────────────────────────────────── */
+.link-icon-svg {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 /* ── Buttons ───────────────────────────────────────────────── */
 .btn {
   display: inline-flex;

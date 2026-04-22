@@ -86,20 +86,6 @@ class ParticleSystem {
         }
         break;
 
-      case 'circles-double':
-        const half = Math.floor(count / 2);
-        for (let i = 0; i < half; i++) {
-          const angle = (i / half) * Math.PI * 2;
-          const r = scale * 0.75 + (Math.random() - 0.5) * 10;
-          targets.push({ x: cx - scale * 0.4 + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
-        }
-        for (let i = 0; i < count - half; i++) {
-          const angle = (i / (count - half)) * Math.PI * 2;
-          const r = scale * 0.75 + (Math.random() - 0.5) * 10;
-          targets.push({ x: cx + scale * 0.4 + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
-        }
-        break;
-
       case 'shield':
         for (let i = 0; i < count; i++) {
           const t = (i / count) * Math.PI * 2;
@@ -139,6 +125,34 @@ class ParticleSystem {
         }
         break;
 
+      case 'network':
+        // 6 circles forming a ring (Screenshot 4: For Organizations)
+        const clusters = 6;
+        const ptsPerCluster = Math.floor(count / clusters);
+        const ringRadius = scale * 0.8;
+        const clusterRadius = scale * 0.35;
+
+        for (let c = 0; c < clusters; c++) {
+          const cAngle = (c / clusters) * Math.PI * 2 - Math.PI / 2; // start top
+          const clusterCenterX = cx + Math.cos(cAngle) * ringRadius;
+          const clusterCenterY = cy + Math.sin(cAngle) * ringRadius;
+
+          for (let i = 0; i < ptsPerCluster; i++) {
+            const pAngle = Math.random() * Math.PI * 2;
+            // Distribute points towards edge of cluster
+            const pRadius = clusterRadius * Math.pow(Math.random(), 0.5);
+            targets.push({
+              x: clusterCenterX + Math.cos(pAngle) * pRadius,
+              y: clusterCenterY + Math.sin(pAngle) * pRadius
+            });
+          }
+        }
+        // Add remainder to random
+        while (targets.length < count) {
+          targets.push({ x: cx + (Math.random() - 0.5) * scale, y: cy + (Math.random() - 0.5) * scale });
+        }
+        break;
+
       case 'grid':
         const cols = Math.ceil(Math.sqrt(count * (this.w / this.h)));
         const rows = Math.ceil(count / cols);
@@ -154,116 +168,62 @@ class ParticleSystem {
         }
         break;
 
-      case 'wave':
-      case 'dna':
-        // DNA double helix — two intertwining strands + rungs
-        const strandCount = Math.floor(count * 0.4);
-        const rungCount = count - strandCount * 2;
-        const amplitude = scale * 0.6;
-        // Strand 1
-        for (let i = 0; i < strandCount; i++) {
-          const p = i / strandCount;
-          const x = p * this.w;
-          const y = cy + Math.sin(p * Math.PI * 6) * amplitude + (Math.random() - 0.5) * 6;
-          targets.push({ x, y });
-        }
-        // Strand 2 (phase shifted)
-        for (let i = 0; i < strandCount; i++) {
-          const p = i / strandCount;
-          const x = p * this.w;
-          const y = cy + Math.sin(p * Math.PI * 6 + Math.PI) * amplitude + (Math.random() - 0.5) * 6;
-          targets.push({ x, y });
-        }
-        // Connecting rungs
-        for (let i = 0; i < rungCount; i++) {
-          const p = i / rungCount;
-          const x = p * this.w;
-          const y1 = cy + Math.sin(p * Math.PI * 6) * amplitude;
-          const y2 = cy + Math.sin(p * Math.PI * 6 + Math.PI) * amplitude;
-          const t = Math.random();
-          targets.push({ x: x + (Math.random() - 0.5) * 4, y: y1 + (y2 - y1) * t });
+      case 'radial-burst':
+        // Exploding dashes from center
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          // Weighted random so more are further out
+          const r = scale * 1.5 * Math.pow(Math.random(), 0.5) + 50;
+          targets.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
         }
         break;
 
       case 'text': {
-        // Multi-line text → particle formation with optional rotation
         const rawText = this.opts.shapeText || 'POLSRI';
-        const lines = rawText.split('\n');
-        const numLines = lines.length;
-        const rotation = (this.opts.shapeRotation || 0) * Math.PI / 180; // degrees → radians
-
-        // High-res offscreen canvas for sharp sampling
-        const RES_W = 1200;
-        const RES_H = 800;
         const txtCanvas = document.createElement('canvas');
         const txtCtx = txtCanvas.getContext('2d');
-        txtCanvas.width = RES_W;
-        txtCanvas.height = RES_H;
-
-        // Find the longest line to determine font size
-        txtCtx.font = '800 100px Inter, Arial, sans-serif';
-        let maxLineWidth = 0;
-        for (const line of lines) {
-          const w = txtCtx.measureText(line).width;
-          if (w > maxLineWidth) maxLineWidth = w;
-        }
-
-        // Scale font — fill ~70% of width (leave room for rotation)
-        const fontSize = Math.floor((RES_W * 0.65 / maxLineWidth) * 100);
-        const lineHeight = fontSize * 1.35;
-        const totalTextHeight = lineHeight * numLines;
-        const startY = -totalTextHeight / 2 + fontSize * 0.35;
-
-        // Apply rotation around center
-        txtCtx.save();
-        txtCtx.translate(RES_W / 2, RES_H / 2);
-        txtCtx.rotate(rotation);
-
-        txtCtx.font = `800 ${fontSize}px Inter, Arial, sans-serif`;
-        txtCtx.textAlign = 'center';
+        const fontSize = this.opts.fontSize || Math.floor(Math.min(this.w, this.h) * 0.12);
+        
+        txtCtx.font = `900 ${fontSize}px "Times New Roman", Times, serif`;
+        const textWidth = txtCtx.measureText(rawText).width;
+        txtCanvas.width = textWidth + 20;
+        txtCanvas.height = fontSize * 1.5;
+        
+        txtCtx.font = `900 ${fontSize}px "Times New Roman", Times, serif`;
+        txtCtx.textAlign = 'left';
         txtCtx.textBaseline = 'top';
         txtCtx.fillStyle = '#000';
+        txtCtx.fillText(rawText, 5, 5);
 
-        for (let li = 0; li < numLines; li++) {
-          txtCtx.fillText(lines[li], 0, startY + li * lineHeight);
-        }
-        txtCtx.restore();
-
-        // Sample filled pixels
-        const imgData = txtCtx.getImageData(0, 0, RES_W, RES_H).data;
+        const imgData = txtCtx.getImageData(0, 0, txtCanvas.width, txtCanvas.height).data;
         const points = [];
-        const step = Math.max(2, Math.floor(Math.sqrt((RES_W * RES_H) / (count * 2))));
-        const scaleX = this.w / RES_W;
-        const scaleY = this.h / RES_H;
-        const offsetY = this.opts.shapeOffsetY || 0;
+        
+        // Grid spacing
+        const step = this.opts.textGap || 6;
+        
+        // Exact positioning
+        const startX = this.opts.shapeOffsetX !== undefined ? this.opts.shapeOffsetX : this.w * 0.08; // 8% from left
+        const startY = this.opts.shapeOffsetY !== undefined ? this.opts.shapeOffsetY : this.h * 0.7; // 70% down
 
-        for (let yy = 0; yy < RES_H; yy += step) {
-          for (let xx = 0; xx < RES_W; xx += step) {
-            const idx = (yy * RES_W + xx) * 4;
+        for (let yy = 0; yy < txtCanvas.height; yy += step) {
+          for (let xx = 0; xx < txtCanvas.width; xx += step) {
+            const idx = (yy * txtCanvas.width + xx) * 4;
             if (imgData[idx + 3] > 128) {
               points.push({
-                x: xx * scaleX + (Math.random() - 0.5) * step * scaleX * 0.4,
-                y: yy * scaleY + (Math.random() - 0.5) * step * scaleY * 0.4 + offsetY,
+                x: startX + xx,
+                y: startY + yy
               });
             }
           }
         }
 
-        // Distribute particles across sampled points
-        if (points.length > 0) {
-          for (let i = points.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [points[i], points[j]] = [points[j], points[i]];
-          }
-          for (let i = 0; i < count; i++) {
-            targets.push(points[i % points.length]);
-          }
-        } else {
-          for (let i = 0; i < count; i++) {
-            targets.push({ x: Math.random() * this.w, y: Math.random() * this.h });
-          }
+        // Shuffle points to avoid linear formation
+        for (let i = points.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [points[i], points[j]] = [points[j], points[i]];
         }
-        break;
+        
+        return points;
       }
 
       default:
@@ -284,9 +244,15 @@ class ParticleSystem {
     this.particles = [];
     const targets = this.opts.shape ? this.getShapeTargets(this.opts.shape, this.opts.count) : null;
 
+    if (this.opts.shape === 'text' && targets && targets.length > 0) {
+      this.opts.count = targets.length;
+    }
+
+    const isText = this.opts.shape === 'text';
+
     for (let i = 0; i < this.opts.count; i++) {
       const color = this.getParticleColor();
-      const size = this.opts.size * (0.4 + Math.random() * 1.2);
+      const size = isText ? this.opts.size : this.opts.size * (0.4 + Math.random() * 1.2);
 
       const p = {
         x: Math.random() * this.w,
@@ -305,6 +271,34 @@ class ParticleSystem {
         driftSpeed: 0.002 + Math.random() * 0.005,
       };
       this.particles.push(p);
+    }
+  }
+
+  // ── Smooth transition to a new shape (no blink) ──
+  setTargets(shape, colors, shapeScale) {
+    if (colors) this.opts.colors = colors;
+    if (shapeScale !== undefined) this.opts.shapeScale = shapeScale;
+    this.opts.shape = shape;
+    const targets = this.getShapeTargets(shape, this.opts.count);
+    if (!targets) return;
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+      p.tx = targets[i].x;
+      p.ty = targets[i].y;
+      if (colors) p.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+  }
+
+  // ── Smoothly scatter all particles (remove targets) ──
+  clearTargets(colors) {
+    this.opts.shape = null;
+    if (colors) this.opts.colors = colors;
+    for (const p of this.particles) {
+      p.tx = null;
+      p.ty = null;
+      p.vx = (Math.random() - 0.5) * this.opts.speed * 2;
+      p.vy = (Math.random() - 0.5) * this.opts.speed * 2;
+      if (colors) p.color = colors[Math.floor(Math.random() * colors.length)];
     }
   }
 
@@ -378,9 +372,20 @@ class ParticleSystem {
 
       // Draw particle
       this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      this.ctx.fillStyle = p.color.replace(/[\d.]+\)$/, (p.alpha * this.opts.opacity) + ')');
-      this.ctx.fill();
+      if (this.opts.particleStyle === 'dash') {
+        const angle = Math.atan2(p.y - (this.h / 2), p.x - (this.w / 2));
+        const len = p.size * 5;
+        this.ctx.moveTo(p.x, p.y);
+        this.ctx.lineTo(p.x + Math.cos(angle) * len, p.y + Math.sin(angle) * len);
+        this.ctx.strokeStyle = p.color.replace(/[\d.]+\)$/, (p.alpha * this.opts.opacity) + ')');
+        this.ctx.lineWidth = p.size;
+        this.ctx.lineCap = 'round';
+        this.ctx.stroke();
+      } else {
+        this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        this.ctx.fillStyle = p.color.replace(/[\d.]+\)$/, (p.alpha * this.opts.opacity) + ')');
+        this.ctx.fill();
+      }
     }
 
     // Draw connections
@@ -393,12 +398,13 @@ class ParticleSystem {
           const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < this.opts.connectionDistance) {
-            const alpha = (1 - dist / this.opts.connectionDistance) * 0.15;
+            const alpha = (1 - dist / this.opts.connectionDistance) * 0.35;
             this.ctx.beginPath();
             this.ctx.moveTo(a.x, a.y);
             this.ctx.lineTo(b.x, b.y);
-            this.ctx.strokeStyle = `rgba(0,0,0,${alpha * 0.5})`;
-            this.ctx.lineWidth = 0.5;
+            // Elegant academic blue/monochrome plexus
+            this.ctx.strokeStyle = `rgba(30, 64, 175, ${alpha})`;
+            this.ctx.lineWidth = 0.8;
             this.ctx.stroke();
           }
         }
@@ -416,6 +422,8 @@ class ParticleSystem {
     if (this._resizeHandler) window.removeEventListener('resize', this._resizeHandler);
   }
 }
+
+
 
 // ── Global helper functions ──
 const particleSystems = {};
