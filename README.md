@@ -54,7 +54,7 @@ polsri-edu-ai/
 │   ├── pages/  
 │   │   ├── index.html  
 │   │   ├── login.html  
-│   │   ├── admin/
+│   │   ├── admin/    
 │   │   │   └── dashboard.html  
 │   │   ├── dosen/  
 │   │   │   └── dashboard.html  
