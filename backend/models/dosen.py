@@ -40,7 +40,7 @@ class Dosen(Base):
     full_name = Column(String(255), nullable=False)
     study_program = Column(String(100), nullable=False)
     major = Column(String(100), nullable=False)
-    positiion = Column(String(100), nullable=True)
+    position = Column(String(100), nullable=True)
     
     # Status
     activate_status = Column(Boolean, default=True)
@@ -68,6 +68,7 @@ class Dosen(Base):
         "Grade",
         back_populates="dosen"
     )
+    jadwal = relationship("JadwalKuliah", back_populates="dosen")
     
     def __repr__(self):
         return f"<Dosen nidn={self.nidn} nama={self.full_name}>"

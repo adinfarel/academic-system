@@ -105,8 +105,11 @@ class Grade(Base):
         UniqueConstraint(
             'mahasiswa_id', 'kode_mk', 'semester_ke', 'academic_year',
             name='unique_grade_mk_per_semester'
-        )
+        ),
     )
+    
+    mahasiswa = relationship("Mahasiswa", back_populates="grade")
+    dosen = relationship("Dosen", back_populates="grade_given")
     
     def __repr__(self):
         return (
@@ -158,7 +161,7 @@ class IpsSemester(Base):
     # CONSTRAINT
     __table_args__ = (
         UniqueConstraint("mahasiswa_id", "semester_ke", "academic_year",
-                         name="unique_ips_per_semester")
+                         name="unique_ips_per_semester"),
     )
     
     mahasiswa = relationship("Mahasiswa", back_populates="ips_list")

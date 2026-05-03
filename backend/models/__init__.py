@@ -11,10 +11,18 @@ from backend.models.user import User, UserRole
 from backend.models.mahasiswa import Mahasiswa
 from backend.models.dosen import Dosen
 from backend.models.absensi import Absensi, AttendanceStatus, AbsensiMethods
+from backend.models.grade import Grade, LetterGrade
+from backend.models.jadwal import JadwalKuliah, HariKuliah
+from backend.models.announcement import Announcement, AnnouncementTarget
+from backend.models.kelas import Kelas
 
 __all__ = [
     "User", "UserRole",
-    "Mahsiswa",
+    "Mahasiswa",
     "Dosen",
+    "Kelas",
     "Absensi", "AttendanceStatus", "AbsensiMethods",
+    "Grade", '"IpsSemester', "LetterGrade",
+    "JadwalKuliah", "HariKuliah",
+    "Announcement", "AnnouncementTarget"
 ]

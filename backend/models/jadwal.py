@@ -41,8 +41,12 @@ class JadwalKuliah(Base):
     jam_selesai = Column(Time, nullable=False)
     ruangan = Column(String(50), nullable=False)
     
-    program_studi = Column(String(100), nullable=False)
-    semester_ke = Column(Integer, nullable=False)
+    kelas_id = Column(
+        Integer,
+        ForeignKey("kelas.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
     
     tahun_akademik = Column(String(10), nullable=False)
     
@@ -62,6 +66,7 @@ class JadwalKuliah(Base):
     )
     
     dosen = relationship("Dosen", back_populates="jadwal")
+    kelas = relationship("Kelas", back_populates="jadwal")
     
     def __repr__(self):
         return (

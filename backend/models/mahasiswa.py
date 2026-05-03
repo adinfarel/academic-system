@@ -42,6 +42,14 @@ class Mahasiswa(Base):
     semester = Column(Integer, nullable=False)
     entry_year = Column(Integer, nullable=False)
     
+    # Class
+    kelas_id = Column(
+        Integer,
+        ForeignKey("kelas.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+    
     # Academic Status
     status_ukt = Column(Boolean, default=False)
     
@@ -66,6 +74,7 @@ class Mahasiswa(Base):
     
     # Relationships
     user = relationship("User", back_populates="mahasiswa")
+    kelas = relationship("Kelas", back_populates="mahasiswa")
     absensi = relationship(
         "Absensi",
         back_populates="mahasiswa",
