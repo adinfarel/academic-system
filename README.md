@@ -1,4 +1,4 @@
-# Academic-System 🎓
+# Academic-System
 
 > Integrated Academic System based on Computer Vision & AI Agent for the Polsri campus environment.
 
@@ -136,13 +136,13 @@ uvicorn backend.main:app --reload
 ## Roadmap
 
 - [x] Fase 0 — Setup project & GitHub
-- [ ] Fase 1 — Frontend statis (Landing, Login, Dashboard)
-- [ ] Fase 2 — Backend fondasi (Auth, Models, API)
-- [ ] Fase 3 — Computer Vision & Absensi
-- [ ] Fase 4 — AI Agent & RAG
+- [x] Fase 1 — Frontend statis (Landing, Login, Dashboard)
+- [x] Fase 2 — Backend fondasi (Auth, Models, API)
+- [x] Fase 3 — Computer Vision & Absensi
+- [x] Fase 4 — AI Agent & RAG
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **adinfarel** — [@adinfarel](https://github.com/adinfarel)
